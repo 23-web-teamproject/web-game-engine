@@ -23,6 +23,6 @@ window.onload = () => {
   Engine.initWithForm({
     thumbnailImagePath: "/favicon.ico",
     title: "gameEngine",
-    scene: ExampleScene
+    scene: ExampleScene1
   });
 };
