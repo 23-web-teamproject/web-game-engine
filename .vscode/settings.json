@@ -1,4 +1,10 @@
 {
-  "javascript.preferences.importModuleSpecifierEnding": "js",
-  "javascript.preferences.importModuleSpecifier": "relative"
+    "[javascript]": {
+        "editor.tabSize": 2
+    },
+    "[css]": {
+        "editor.tabSize": 2
+    },
+    "javascript.preferences.importModuleSpecifierEnding": "js",
+    "javascript.preferences.importModuleSpecifier": "relative"
 }
