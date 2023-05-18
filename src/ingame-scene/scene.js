@@ -1,3 +1,4 @@
+import { BoxCollider } from "../engine/data-structure/collider.js";
 import {
   GameObject,
   Circle,
@@ -32,6 +33,9 @@ export default class Stage1 extends GameObject {
       },
     });
     this.circle.onCollision = (other) => {
+      if (other.rigidbody.isTrigger) {
+        return;
+      }
       if (
         this.circle.getVelocity().y > -30 ||
         this.circle.getVelocity().y < -30
@@ -40,7 +44,7 @@ export default class Stage1 extends GameObject {
       }
     };
     this.addChild(this.circle);
-  
+
     this.sprite = new Sprite({
       imagePath: "ground1.png",
       transform: {
@@ -48,8 +52,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -60,8 +64,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -72,8 +76,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -84,8 +88,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -96,8 +100,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -108,8 +112,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -120,8 +124,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -132,8 +136,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -144,8 +148,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -156,8 +160,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -168,8 +172,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -180,8 +184,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -192,8 +196,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -204,8 +208,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -216,8 +220,8 @@ export default class Stage1 extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true
-      }
+        isStatic: true,
+      },
     });
     this.addChild(this.sprite);
 
@@ -227,11 +231,13 @@ export default class Stage1 extends GameObject {
         position: new Vector(520, 360),
       },
       isPhysicsEnable: true,
+      rigidbody: {
+        isTrigger: true,
+      },
     });
     this.addChild(this.star);
     this.star.onCollision = (other) => {
       this.star.destroy();
-      this.circle.addVelocity(new Vector(0, -100));
     };
   }
 
