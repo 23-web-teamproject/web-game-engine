@@ -93,7 +93,7 @@ export default class TutorialScene4 extends GameObject {
     this.sprite = new Sprite({
       imagePath: "ground1.png",
       transform: {
-        position: new Vector(190,400)
+        position: new Vector(160,400)
       }
     });
     this.addChild(this.sprite);
