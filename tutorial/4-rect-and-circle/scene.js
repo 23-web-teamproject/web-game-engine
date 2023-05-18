@@ -390,7 +390,7 @@ export default class TutorialScene4 extends GameObject {
     this.addChild(this.rect);
     Path.setAssetFolderPath(import.meta.url); // 이 코드가 없으면 상대경로로 불러올 수 없습니다.
     // Path.setAssetFolderPath("/src/tutorial/6-sprite/"); // import.meta.url 대신 직접 절대경로로 지정할 수 있습니다.
-    this.sprite200 = new Sprite({
+    this.sprite = new Sprite({
       imagePath: "ground1.png",
       transform: {
         position: new Vector(520,400)
