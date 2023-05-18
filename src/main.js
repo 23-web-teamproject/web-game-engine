@@ -1,6 +1,6 @@
 import Engine from "/src/engine/engine.js";
 import ExampleScene from "/src/default-scene/scene.js";
-
+import TutorialScene4 from "/tutorial/4-rect-and-circle/scene.js";
 /**
  * main.js는 index.html에서 명시적으로 불러오고 있다.
  * 따라서 절대 지워서는 안된다.
@@ -23,6 +23,6 @@ window.onload = () => {
   Engine.initWithForm({
     thumbnailImagePath: "/favicon.ico",
     title: "gameEngine",
-    scene: ExampleScene1
+    scene: TutorialScene4
   });
 };
