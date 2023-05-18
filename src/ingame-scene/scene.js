@@ -269,7 +269,7 @@ export default class Stage1 extends GameObject {
       });
       this.addChild(this.particleEffect);
       this.particleEffect.run();
-      SceneManager.loadScene(TutorialScene4);
+      SceneManager.loadScene(Stage1);
     }
   }
 }
