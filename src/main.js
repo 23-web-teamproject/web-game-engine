@@ -1,6 +1,6 @@
 import Engine from "/src/engine/engine.js";
-import ExampleScene from "/src/default-scene/scene.js";
-import TutorialScene4 from "/tutorial/4-rect-and-circle/scene.js";
+import Stage1 from "./ingame-scene/scene.js";
+
 /**
  * main.js는 index.html에서 명시적으로 불러오고 있다.
  * 따라서 절대 지워서는 안된다.
@@ -13,16 +13,16 @@ import TutorialScene4 from "/tutorial/4-rect-and-circle/scene.js";
  * Engine.initWithForm()으로 form을 이용해 엔진을 초기화할 수 있다.
  */
 window.onload = () => {
-  // Engine.init({
-  //   width: 1280,
-  //   height: 720,
-  //   fps: 60,
-  //   title: "gameEngineTitle",
-  //   scene: ExampleScene
-  // });
-  Engine.initWithForm({
-    thumbnailImagePath: "/favicon.ico",
-    title: "gameEngine",
-    scene: TutorialScene4
+  Engine.init({
+    width: 1280,
+    height: 720,
+    fps: 60,
+    title: "gameEngineTitle",
+    scene: Stage1
   });
+  // Engine.initWithForm({
+  //   thumbnailImagePath: "/favicon.ico",
+  //   title: "gameEngine",
+  //   scene: ExampleScene1
+  // });
 };
