@@ -46,9 +46,8 @@ export default class TutorialScene4 extends GameObject {
         position: new Vector(100,400)
       }
     });
-    this.addChild(this.sprite);
     this.addChild(this.rect);
-
+    this.addChild(this.sprite);
     this.rect = new Rect({
       width: 30,
       height: 30,
