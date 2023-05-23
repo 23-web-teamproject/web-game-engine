@@ -1,5 +1,6 @@
 import { BoxCollider } from "../engine/data-structure/collider.js";
 import JumpBlock from "../ingame-block/jumpblock.js";
+import Thorn from "../ingame-block/thorn.js";
 import {
   GameObject,
   Circle,
@@ -41,6 +42,11 @@ export default class Stage1 extends GameObject {
         other.getName()=="jumpblock"
       ) {
         this.circle.transform.velocity.y = -50;
+      }
+      else if(
+        other.getName()=="thorn"
+      ) {
+        SceneManager.loadScene(Stage1);
       }
       else
       {
@@ -157,17 +163,8 @@ export default class Stage1 extends GameObject {
     });
     this.addChild(this.sprite);
 
-    this.sprite = new Sprite({
-      imagePath: "ground1.png",
-      transform: {
-        position: new Vector(370, 440),
-      },
-      isPhysicsEnable: true,
-      rigidbody: {
-        isStatic: true,
-      },
-    });
-    this.addChild(this.sprite);
+    this.thorn = new Thorn(370,440)
+    this.addChild(this.thorn);
 
     this.sprite = new Sprite({
       imagePath: "ground1.png",
