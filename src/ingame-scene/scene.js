@@ -15,6 +15,8 @@ import {
 } from "/src/engine/module.js";
 import Path from "/src/engine/utils/path.js";
 import Ball from "../ingame-block/ball.js";
+import disappear_block from "../ingame-block/disappear_block.js";
+import star from "../ingame-block/star.js";
 
 export default class Stage1 extends GameObject {
   constructor() {
@@ -34,8 +36,8 @@ export default class Stage1 extends GameObject {
     this.block = new Block(160, 400)
     this.addChild(this.block);
 
-    this.block = new Block(190, 400)
-    this.addChild(this.block);
+    this.disappear_block = new disappear_block(190, 400);
+    this.addChild(this.disappear_block);
 
     this.block = new Block(220, 420)
     this.addChild(this.block);
@@ -70,53 +72,13 @@ export default class Stage1 extends GameObject {
     this.block = new Block(520, 400)
     this.addChild(this.block);
 
-    this.star = new Sprite({
-      imagePath: "star.png",
-      transform: {
-        position: new Vector(520, 360),
-      },
-      isPhysicsEnable: true,
-      rigidbody: {
-        isTrigger: true,
-      },
-    });
+    this.star = new star(570, 300)
     this.addChild(this.star);
-    this.star.onCollision = (other) => {
-      this.star.destroy();
-    };
-    this.jumpblock = new JumpBlock(570,400
-    )
+
+    this.jumpblock = new JumpBlock(570,400)
     this.addChild(this.jumpblock);
   }
   update(deltaTime) {
     super.update(deltaTime);
-    if (InputManager.isKeyPressed("ArrowLeft")) {
-      this.circle.addPosition(new Vector(-2, 0));
-    }
-    if (InputManager.isKeyPressed("ArrowRight")) {
-      this.circle.addPosition(new Vector(2, 0));
-    }
-    if (
-      this.circle.getPosition().y >= 768 &&
-      this.particleEffect === undefined
-    ) {
-      this.particleEffect = new ParticleEffect({
-        isEnable: true,
-        isScaleFade: false,
-        isAlphaFade: true,
-        countPerSecond: 15,
-        direction: 45,
-        duration: 1,
-        diffuseness: 15,
-        speed: 120,
-        lifeTime: 10,
-        transform: {
-          position: this.circle.getPosition(),
-        },
-      });
-      this.addChild(this.particleEffect);
-      this.particleEffect.run();
-      SceneManager.loadScene(Stage1);
-    }
   }
 }

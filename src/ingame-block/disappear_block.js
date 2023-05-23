@@ -30,7 +30,7 @@ export default class disappear_block extends GameObject {
     });
 
     this.sprite.onCollision = (other) => {
-      this.other.destroy();
+      this.sprite.destroy();
     };
 
     this.addChild(this.sprite);
