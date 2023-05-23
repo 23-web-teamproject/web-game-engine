@@ -63,7 +63,7 @@ export default class Ball extends Rect {
         speed: 120,
         lifeTime: 10,
         transform: {
-          position: this.circle.getPosition(),
+          position: this.getPosition(),
         },
       });
       this.addChild(this.particleEffect);
