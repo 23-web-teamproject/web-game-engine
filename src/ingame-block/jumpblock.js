@@ -21,9 +21,8 @@ export default class JumpBlock extends GameObject {
    */
   constructor(x, y) {
     super();
-    Path.setAssetFolderPath(import.meta.url);
     this.sprite = new Sprite({
-      imagePath: "jumpblock.png",
+      imagePath: "/src/ingame-block/jumpblock.png",
       transform: {
         position: new Vector(x, y),
       },

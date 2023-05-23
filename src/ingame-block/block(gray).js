@@ -13,28 +13,19 @@ import {
 import Path from "/src/engine/utils/path.js";
 
 export default class Stage1 extends GameObject {
-  constructor() {
+  /**
+   * 기본블록입니다.
+   * 
+   * @param {number} x - x좌표
+   * @param {number} y - y좌표
+   */
+  constructor(x, y) {
     super();
     //setAssetFolderPath는 한 번만 실행해도 됩니다.
-    Path.setAssetFolderPath(import.meta.url); // 이 코드가 없으면 상대경로로 불러올 수 없습니다.
-    this.rect = new Rect({
-      width: 30,
-      height: 30,
-      isPhysicsEnable: true,
-      transform: {
-        position: new Vector(100,100),
-      },
-      rigidbody: {
-        bounceness: 1,
-        isGravity: true,
-      }
-    });
-    this.addChild(this.rect);
-
     this.sprite = new Sprite({
-      imagePath: "block(gray).png",
+      imagePath: "/src/ingame-block/block(gray).png",
       transform: {
-        position: new Vector(100, 100),
+        position: new Vector(x, y),
       },
       isPhysicsEnable: true,
       rigidbody: {
@@ -42,6 +33,5 @@ export default class Stage1 extends GameObject {
       },
     });
     this.addChild(this.sprite);
-
   }
 }
