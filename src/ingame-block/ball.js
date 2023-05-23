@@ -5,6 +5,7 @@ import {
   Color,
   InputManager,
   ParticleEffect,
+  RenderManager,
 } from "/src/engine/module.js";
 
 export default class Ball extends Rect {
@@ -54,22 +55,25 @@ export default class Ball extends Rect {
     ) {
       this.particleEffect = new ParticleEffect({
         isEnable: true,
-        isScaleFade: false,
+        isScaleFade: true,
         isAlphaFade: true,
-        countPerSecond: 15,
-        direction: 45,
-        duration: 1,
-        diffuseness: 15,
-        speed: 120,
-        lifeTime: 10,
+        countPerSecond: 30,
+        direction: 90,
+        duration: 0.25,
+        diffuseness: 90,
+        speed: 100,
+        lifeTime: 1,
         transform: {
-          position: this.circle.getPosition(),
-        },
+          position: new Vector(this.getPosition().x, RenderManager.renderCanvasHeight)
+        }
       });
       this.addChild(this.particleEffect);
+      // 이펙트의 부모를 제거하면 자동으로 이펙트의 부모가 씬 객체로 설정됨
+      this.particleEffect.removeParent();
       this.particleEffect.run();
     }
   }
+
 
   /**
    * 공이 다른 객체와 충돌했을 때 실행될 이벤트 함수입니다.
