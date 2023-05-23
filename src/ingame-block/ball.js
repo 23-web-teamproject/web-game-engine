@@ -36,7 +36,7 @@ export default class Ball extends Rect {
         radius: 10,
         color: new Color(255, 255, 0, 1),
         strokeColor: new Color(0, 0, 0, 1),
-        strokeWidth: 1.5
+        strokeWidth: 1.5,
       })
     );
   }
@@ -49,10 +49,7 @@ export default class Ball extends Rect {
     if (InputManager.isKeyPressed("ArrowRight")) {
       this.addPosition(new Vector(2, 0));
     }
-    if (
-      this.getPosition().y >= 768 &&
-      this.particleEffect === undefined
-    ) {
+    if (this.getPosition().y >= 768 && this.particleEffect === undefined) {
       this.particleEffect = new ParticleEffect({
         isEnable: true,
         isScaleFade: true,
@@ -64,10 +61,11 @@ export default class Ball extends Rect {
         speed: 100,
         lifeTime: 1,
         transform: {
-          position: this.getPosition(),
+          position: new Vector(
+            clamp(this.getPosition().x, 0, RenderManager.renderCanvasWidth),
+            clamp(this.getPosition().y, 0, RenderManager.renderCanvasHeight)
+          ),
         },
-          position: new Vector(this.getPosition().x, RenderManager.renderCanvasHeight)
-        }
       });
       this.addChild(this.particleEffect);
       // 이펙트의 부모를 제거하면 자동으로 이펙트의 부모가 씬 객체로 설정됨
@@ -75,7 +73,6 @@ export default class Ball extends Rect {
       this.particleEffect.run();
     }
   }
-
 
   /**
    * 공이 다른 객체와 충돌했을 때 실행될 이벤트 함수입니다.
