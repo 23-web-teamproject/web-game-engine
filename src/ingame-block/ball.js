@@ -12,7 +12,7 @@ import {
 } from "/src/engine/module.js";
 import Path from "/src/engine/utils/path.js";
 
-export default class Stage1 extends GameObject {
+export default class ball extends GameObject {
   constructor() {
     super();
     //setAssetFolderPath는 한 번만 실행해도 됩니다.
@@ -73,7 +73,6 @@ export default class Stage1 extends GameObject {
       });
       this.addChild(this.particleEffect);
       this.particleEffect.run();
-      SceneManager.loadScene(Stage1);
     }
   }
 }
