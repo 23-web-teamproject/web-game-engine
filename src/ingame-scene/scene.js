@@ -1,4 +1,5 @@
 import { BoxCollider } from "../engine/data-structure/collider.js";
+import JumpBlock from "../ingame-block/jumpblock.js";
 import {
   GameObject,
   Circle,
@@ -37,9 +38,12 @@ export default class Stage1 extends GameObject {
         return;
       }
       if (
-        this.circle.getVelocity().y > -30 ||
-        this.circle.getVelocity().y < -30
+        other.getName()=="jumpblock"
       ) {
+        this.circle.transform.velocity.y = -50;
+      }
+      else
+      {
         this.circle.transform.velocity.y = -30;
       }
     };
@@ -239,8 +243,10 @@ export default class Stage1 extends GameObject {
     this.star.onCollision = (other) => {
       this.star.destroy();
     };
+    this.jumpblock = new JumpBlock(570,400
+    )
+    this.addChild(this.jumpblock);
   }
-
   update(deltaTime) {
     super.update(deltaTime);
     if (InputManager.isKeyPressed("ArrowLeft")) {
