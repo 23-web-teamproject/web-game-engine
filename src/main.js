@@ -1,5 +1,5 @@
 import Engine from "/src/engine/engine.js";
-import Stage2 from "./ingame-scene/scene2.js";
+import Stage2 from "./ingame-scene/scene.js";
 
 /**
  * main.js는 index.html에서 명시적으로 불러오고 있다.
