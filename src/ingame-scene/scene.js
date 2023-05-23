@@ -14,6 +14,7 @@ import {
   Sprite,
 } from "/src/engine/module.js";
 import Path from "/src/engine/utils/path.js";
+import Ball from "../ingame-block/ball.js";
 
 export default class Stage1 extends GameObject {
   constructor() {
@@ -21,40 +22,8 @@ export default class Stage1 extends GameObject {
     //setAssetFolderPath는 한 번만 실행해도 됩니다.
     Path.setAssetFolderPath(import.meta.url); // 이 코드가 없으면 상대경로로 불러올 수 없습니다.
 
-    this.circle = new Circle({
-      radius: 10,
-      color: new Color(255, 255, 0, 1),
-      strokeColor: new Color(0, 0, 0, 1),
-      strokeWidth: 1.5,
-      transform: {
-        position: new Vector(500, 250),
-      },
-      isPhysicsEnable: true,
-      rigidbody: {
-        bounceness: 1,
-        isGravity: true,
-      },
-    });
-    this.circle.onCollision = (other) => {
-      if (other.rigidbody.isTrigger) {
-        return;
-      }
-      if (
-        other.getName()=="jumpblock"
-      ) {
-        this.circle.transform.velocity.y = -50;
-      }
-      else if(
-        other.getName()=="thorn"
-      ) {
-        SceneManager.loadScene(Stage1);
-      }
-      else
-      {
-        this.circle.transform.velocity.y = -30;
-      }
-    };
-    this.addChild(this.circle);
+    this.ball = new Ball(500, 200);
+    this.addChild(this.ball);
 
     this.block = new Block(100, 400)
     this.addChild(this.block);
