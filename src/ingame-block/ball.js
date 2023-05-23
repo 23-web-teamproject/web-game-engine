@@ -8,6 +8,8 @@ import {
   RenderManager,
 } from "/src/engine/module.js";
 
+import { clamp } from "../engine/utils.js";
+
 export default class Ball extends Rect {
   /**
    * 플레이어가 조종할 공입니다.
@@ -49,15 +51,20 @@ export default class Ball extends Rect {
     if (InputManager.isKeyPressed("ArrowRight")) {
       this.addPosition(new Vector(2, 0));
     }
-    if (this.getPosition().y >= 768 && this.particleEffect === undefined) {
+    if (
+      (this.getPosition().y >= RenderManager.renderCanvasHeight ||
+        this.getPosition().x < 0 ||
+        this.getPosition().x >= RenderManager.renderCanvasWidth) &&
+      this.particleEffect === undefined
+    ) {
       this.particleEffect = new ParticleEffect({
         isEnable: true,
         isScaleFade: true,
         isAlphaFade: true,
         countPerSecond: 30,
-        direction: 90,
+        direction: 0,
         duration: 0.25,
-        diffuseness: 90,
+        diffuseness: 180,
         speed: 100,
         lifeTime: 1,
         transform: {
