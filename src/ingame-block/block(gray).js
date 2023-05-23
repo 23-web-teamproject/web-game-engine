@@ -32,7 +32,7 @@ export default class Stage1 extends GameObject {
     this.addChild(this.rect);
 
     this.sprite = new Sprite({
-      imagePath: "ground1.png",
+      imagePath: "block(gray).png",
       transform: {
         position: new Vector(100, 100),
       },
