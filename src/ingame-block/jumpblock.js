@@ -12,39 +12,31 @@ import {
 } from "/src/engine/module.js";
 import Path from "/src/engine/utils/path.js";
 
-export default class Stage1 extends GameObject {
-  constructor() {
+export default class JumpBlock extends GameObject {
+  /**
+   * 밟으면 더 높이 뛰어오르는 블록입니다.
+   * 
+   * @param {number} x - x좌표
+   * @param {number} y - y좌표
+   */
+  constructor(x, y) {
     super();
-    //setAssetFolderPath는 한 번만 실행해도 됩니다.
-    Path.setAssetFolderPath(import.meta.url); // 이 코드가 없으면 상대경로로 불러올 수 없습니다.
-    this.rect = new Rect({
-      width: 30,
-      height: 30,
-      isPhysicsEnable: true,
-      transform: {
-        position: new Vector(100,100),
-      },
-      rigidbody: {
-        bounceness: 1,
-        isGravity: true,
-      }
-    });
-    this.rect.onCollision = (other) => {
-        this.circle.transform.velocity.y = -60;
-    };
-    this.addChild(this.rect);
-
+    Path.setAssetFolderPath(import.meta.url);
     this.sprite = new Sprite({
       imagePath: "jumpblock.png",
       transform: {
-        position: new Vector(100, 100),
+        position: new Vector(x, y),
       },
       isPhysicsEnable: true,
       rigidbody: {
         isStatic: true,
       },
     });
-    this.addChild(this.sprite);
+    
+    this.sprite.onCollision = (other) => {
+        this.circle.transform.velocity.y = -60;
+    };
 
+    this.addChild(this.sprite);
   }
 }
