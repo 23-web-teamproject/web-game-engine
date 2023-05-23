@@ -12,7 +12,7 @@ import {
 } from "/src/engine/module.js";
 import Path from "/src/engine/utils/path.js";
 
-export default class Stage1 extends GameObject {
+export default class Block extends GameObject {
   /**
    * 기본블록입니다.
    * 
