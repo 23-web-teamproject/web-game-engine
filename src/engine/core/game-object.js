@@ -24,6 +24,7 @@ export default class GameObject {
   /**
    * @constructor
    * @param {object} [options]
+   * @param {string} [options.name]
    * @param {boolean} [options.isActive]
    * @param {boolean} [options.isVisible]
    * @param {Layer} [options.layer]
@@ -49,6 +50,13 @@ export default class GameObject {
      * @type {CanvasRenderingContext2d}
      */
     this.context2d = RenderManager.getRenderCanvas().getContext("2d");
+    /**
+     * 생성된 객체의 이름을 말한다.
+     * 기본값으로는 생성자의 이름을 저장한다.
+     *
+     * @type {string}
+     */
+    this.name = typeCheck(options.name, "string", this.constructor.name);
     /**
      * 화면에 이 객체를 그릴 것인지를 의미한다.
      * 기본값은 true다.
@@ -305,6 +313,25 @@ export default class GameObject {
    */
   afterDraw() {
     this.context2d.restore();
+  }
+
+  /**
+   * 이 객체의 이름을 반환한다.
+   *
+   * @returns {string}
+   */
+  getName() {
+    return this.name;
+  }
+
+  /**
+   * 이 객체의 이름을 설정한다.
+   * 기본값으로는 생성자의 이름을 저장하게 된다.
+   *
+   * @param {string} name - 객체의 이름
+   */
+  setName(name) {
+    this.name = typeCheck(name, "string", this.constructor.name);
   }
 
   /**
