@@ -5,12 +5,17 @@ import {
   Color,
   InputManager,
   ParticleEffect,
+<<<<<<< Updated upstream
   RenderManager,
   SceneManager
 } from "/src/engine/module.js";
 
 import { clamp } from "../engine/utils.js";
 
+=======
+  SceneManager
+} from "/src/engine/module.js";
+>>>>>>> Stashed changes
 export default class Ball extends Rect {
   /**
    * 플레이어가 조종할 공입니다.
@@ -59,6 +64,7 @@ export default class Ball extends Rect {
     }
     if(this.a==1)
     {
+<<<<<<< Updated upstream
       this.rigidbody.isGravity = false;
       this.addPosition(new Vector(1, 0));
     }
@@ -66,6 +72,13 @@ export default class Ball extends Rect {
     {
       this.rigidbody.isGravity = false;
       this.addPosition(new Vector(-1, 0));
+=======
+      this.addPosition(new Vector(3,0));
+    }
+    if(this.a==-1)
+    {
+      this.addPosition(new Vector(-3,0));
+>>>>>>> Stashed changes
     }
     if (
       (this.getPosition().y >= RenderManager.renderCanvasHeight ||
@@ -84,10 +97,14 @@ export default class Ball extends Rect {
         speed: 100,
         lifeTime: 1,
         transform: {
+<<<<<<< Updated upstream
           position: new Vector(
             clamp(this.getPosition().x, 0, RenderManager.renderCanvasWidth),
             clamp(this.getPosition().y, 0, RenderManager.renderCanvasHeight)
           ),
+=======
+          position: this.getPosition(),
+>>>>>>> Stashed changes
         },
       });
       this.addChild(this.particleEffect);
@@ -108,6 +125,7 @@ export default class Ball extends Rect {
       return;
     }
     if (other.getName() == "jumpblock") {
+<<<<<<< Updated upstream
       this.a=0;
       this.rigidbody.isGravity = true;
       this.transform.velocity.y = -50;
@@ -130,6 +148,34 @@ export default class Ball extends Rect {
     } else {
       this.a=0;
       this.rigidbody.isGravity = true;
+=======
+      this.isGravity = true;
+      this.a=0;
+      this.transform.velocity.y = -50;
+    } else if (other.getName() == "thorn") {
+      this.isGravity = true;
+      this.a=0;
+      SceneManager.loadScene(Stage1);
+    } 
+    else if(
+      other.getName()=="moveleftblock"
+    ) {
+      this.a=-1;
+      this.isGravity = false;
+      this.position.x=other.getPosition().x-25;
+      this.position.y=othrt.getPosition().y;
+    }
+    else if(
+      other.getName()=="moverightblock"
+    ) {
+      this.a=1;
+      this.isGravity = false;
+      this.position.x=other.getPosition().x+25;
+      this.position.y=other.getPosition().y;
+    }else {
+      this.isGravity = true;
+      this.a=0;
+>>>>>>> Stashed changes
       this.transform.velocity.y = -30;
     }
   }

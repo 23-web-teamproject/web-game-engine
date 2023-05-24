@@ -18,7 +18,10 @@ import Ball from "../ingame-block/ball.js";
 import disappear_block from "../ingame-block/disappear_block.js";
 import star from "../ingame-block/star.js";
 import MoverightBlock from "../ingame-block/moverightblock.js";
+<<<<<<< Updated upstream
 import MoveleftBlock from "../ingame-block/moveleftblock.js";
+=======
+>>>>>>> Stashed changes
 
 export default class Stage1 extends GameObject {
   constructor() {
@@ -44,7 +47,11 @@ export default class Stage1 extends GameObject {
     this.block = new Block(220, 420)
     this.addChild(this.block);
 
+<<<<<<< Updated upstream
     this.moverightblock = new MoverightBlock(250, 410);
+=======
+    this.moverightblock = new MoverightBlock(250, 410)
+>>>>>>> Stashed changes
     this.addChild(this.moverightblock);
 
     this.block = new Block(250, 440)
