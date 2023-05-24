@@ -6,7 +6,7 @@ import {
   InputManager,
   ParticleEffect,
   RenderManager,
-  SceneManager
+  SceneManager,
 } from "/src/engine/module.js";
 
 import { clamp } from "../engine/utils.js";
@@ -21,7 +21,6 @@ export default class Ball extends Rect {
    */
   constructor(x, y) {
     super({
-      a: 0,
       width: 15,
       height: 15,
       color: new Color(255, 255, 0, 1),
@@ -43,27 +42,32 @@ export default class Ball extends Rect {
         strokeWidth: 1.5,
       })
     );
+
+    /**
+     * 공의 상태를 나타내는 변수
+     * -1이면 왼쪽으로 등속운동하는 중
+     * 1이면 오른쪽으로 등속운동하는 중
+     */
+    this.a = 0;
   }
 
   update(deltaTime) {
     super.update(deltaTime);
     if (InputManager.isKeyPressed("ArrowLeft")) {
-      this.a=0;
+      this.a = 0;
       this.rigidbody.isGravity = true;
       this.addPosition(new Vector(-2, 0));
     }
     if (InputManager.isKeyPressed("ArrowRight")) {
-      this.a=0;
+      this.a = 0;
       this.rigidbody.isGravity = true;
       this.addPosition(new Vector(2, 0));
     }
-    if(this.a==1)
-    {
+    if (this.a == 1) {
       this.rigidbody.isGravity = false;
       this.addPosition(new Vector(1, 0));
     }
-    if(this.a==-1)
-    {
+    if (this.a == -1) {
       this.rigidbody.isGravity = false;
       this.addPosition(new Vector(-1, 0));
     }
@@ -108,27 +112,25 @@ export default class Ball extends Rect {
       return;
     }
     if (other.getName() == "jumpblock") {
-      this.a=0;
+      this.a = 0;
       this.rigidbody.isGravity = true;
       this.transform.velocity.y = -50;
     } else if (other.getName() == "thorn") {
-      this.a=0;
+      this.a = 0;
       this.rigidbody.isGravity = true;
       SceneManager.loadScene(Stage1);
-    }
-    else if (other.getName()=="moverightblock") {
+    } else if (other.getName() == "moverightblock") {
       this.a = 1;
       this.rigidbody.isGravity = false;
-      this.transform.position.x=other.getPosition().x+25;
-      this.transform.position.y=other.getPosition().y;
-    } 
-    else if (other.getName() == "moveleftblock") {
+      this.transform.position.x = other.getPosition().x + 25;
+      this.transform.position.y = other.getPosition().y;
+    } else if (other.getName() == "moveleftblock") {
       this.a = -1;
       this.rigidbody.isGravity = false;
-      this.transform.position.x=other.getPosition().x-25;
-      this.transform.position.y=other.getPosition().y;
-    } else{
-      this.a=0;
+      this.transform.position.x = other.getPosition().x - 25;
+      this.transform.position.y = other.getPosition().y;
+    } else {
+      this.a = 0;
       this.rigidbody.isGravity = true;
       this.transform.velocity.y = -30;
     }
