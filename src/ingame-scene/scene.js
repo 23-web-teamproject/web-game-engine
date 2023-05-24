@@ -17,12 +17,8 @@ import Path from "/src/engine/utils/path.js";
 import Ball from "../ingame-block/ball.js";
 import disappear_block from "../ingame-block/disappear_block.js";
 import star from "../ingame-block/star.js";
-import MoverightBlock from "../ingame-block/moverightblock.js";
-<<<<<<< Updated upstream
 import MoveleftBlock from "../ingame-block/moveleftblock.js";
-=======
->>>>>>> Stashed changes
-
+import MoverightBlock from "../ingame-block/moverightblock.js";
 export default class Stage1 extends GameObject {
   constructor() {
     super();
@@ -47,11 +43,7 @@ export default class Stage1 extends GameObject {
     this.block = new Block(220, 420)
     this.addChild(this.block);
 
-<<<<<<< Updated upstream
-    this.moverightblock = new MoverightBlock(250, 410);
-=======
-    this.moverightblock = new MoverightBlock(250, 410)
->>>>>>> Stashed changes
+    this.moverightblock = new MoverightBlock(250,410)
     this.addChild(this.moverightblock);
 
     this.block = new Block(250, 440)
@@ -90,7 +82,7 @@ export default class Stage1 extends GameObject {
     this.jumpblock = new JumpBlock(570,400)
     this.addChild(this.jumpblock);
 
-    this.moveleftblock = new MoveleftBlock(640, 300)
+    this.moveleftblock = new MoveleftBlock(620, 300)
     this.addChild(this.moveleftblock);
   }
   update(deltaTime) {
