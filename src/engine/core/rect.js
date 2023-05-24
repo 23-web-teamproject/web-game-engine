@@ -14,6 +14,7 @@ export default class Rect extends GameObject {
   /**
    * @constructor
    * @param {object} options
+   * @param {string} [options.name]
    * @param {number} [options.width]
    * @param {number} [options.height]
    * @param {boolean} [options.isActive]

@@ -11,6 +11,7 @@ export default class Text extends GameObject {
   /**
    * @constructor
    * @param {object} options
+   * @param {string} [options.name]
    * @param {string} [options.text]
    * @param {number} [options.fontSize]
    * @param {string} [options.font]

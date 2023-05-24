@@ -4,6 +4,7 @@ import GameObject from "/src/engine/core/game-object.js";
 
 import { CircleCollider } from "/src/engine/data-structure/collider.js";
 import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
+import InputManager from "/src/engine/core/input-manager.js";
 
 /**
  * 화면에 원을 그리는 객체다.
@@ -14,6 +15,7 @@ export default class Circle extends GameObject {
   /**
    * @constructor
    * @param {object} options
+   * @param {string} [options.name]
    * @param {number} [options.radius]
    * @param {Color} [options.color]
    * @param {number} [options.strokeWidth]
@@ -124,5 +126,18 @@ export default class Circle extends GameObject {
    */
   setStrokeWidth(width) {
     this.strokeWidth = typeCheckAndClamp(width, "number", 1, 1, 15);
+  }
+
+  /**
+   * 이 객체위에 마우스가 올라가 있는지를 반환한다.
+   * 원의 경우 반지름을 이용한 계산을 해야한다.
+   *
+   * @returns {boolean}
+   */
+  isMouseOver() {
+    const position = this.getWorldPosition();
+    const mousePos = InputManager.getMousePos();
+    const distance = position.minus(mousePos);
+    return distance.squareLength() < this.radius * this.radius;
   }
 }
