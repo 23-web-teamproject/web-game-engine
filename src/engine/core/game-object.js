@@ -86,6 +86,10 @@ export default class GameObject {
      * @type {RigidBody}
      */
     this.rigidbody = new RigidBody(options.rigidbody);
+
+    if (this.rigidbody.isStatic) {
+      this.rigidbody.inverseMass = 0;
+    }
     /**
      * 이 객체의 좌표, 크기, 각도 등을 의미한다.
      *
@@ -93,12 +97,6 @@ export default class GameObject {
      */
     this.transform = new Transform(options.transform);
 
-    if (this.rigidbody.isStatic) {
-      this.rigidbody.inverseMass = 0;
-    }
-    if (this.rigidbody.isGravity) {
-      this.transform.acceleration.y = 9.8;
-    }
     /**
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
@@ -185,6 +183,14 @@ export default class GameObject {
     if (this.getInverseMass() === 0) {
       return;
     }
+
+    // rigidbody의 isGravity가 참일 때에만 중력가속도를 적용한다.
+    const acceleration = new Vector(0, 0);
+    if (this.rigidbody.isGravity) {
+      acceleration.y += 9.8;
+    }
+    this.setAcceleration(acceleration);
+
     this.addVelocity(this.getAcceleration().multiply(deltaTime));
   }
 
@@ -600,6 +606,15 @@ export default class GameObject {
    */
   addAcceleration(acceleration) {
     this.transform.acceleration = this.transform.acceleration.add(acceleration);
+  }
+
+  /**
+   * 이 객체의 가속도를 특정값으로 설정한다.
+   *
+   * @param {Vector} accelration
+   */
+  setAcceleration(accelration) {
+    this.transform.acceleration = accelration;
   }
 
   /**
