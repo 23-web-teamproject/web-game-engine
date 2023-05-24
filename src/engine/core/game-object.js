@@ -11,6 +11,7 @@ import Vector from "/src/engine/data-structure/vector.js";
 import { BoxCollider } from "/src/engine/data-structure/collider.js";
 
 import DestroyManager from "/src/engine/core/destroy-manager.js";
+import InputManager from "/src/engine/core/input-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 
@@ -85,6 +86,10 @@ export default class GameObject {
      * @type {RigidBody}
      */
     this.rigidbody = new RigidBody(options.rigidbody);
+
+    if (this.rigidbody.isStatic) {
+      this.rigidbody.inverseMass = 0;
+    }
     /**
      * 이 객체의 좌표, 크기, 각도 등을 의미한다.
      *
@@ -92,12 +97,6 @@ export default class GameObject {
      */
     this.transform = new Transform(options.transform);
 
-    if (this.rigidbody.isStatic) {
-      this.rigidbody.inverseMass = 0;
-    }
-    if (this.rigidbody.isGravity) {
-      this.transform.acceleration.y = 9.8;
-    }
     /**
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
@@ -184,6 +183,14 @@ export default class GameObject {
     if (this.getInverseMass() === 0) {
       return;
     }
+
+    // rigidbody의 isGravity가 참일 때에만 중력가속도를 적용한다.
+    const acceleration = new Vector(0, 0);
+    if (this.rigidbody.isGravity) {
+      acceleration.y += 9.8;
+    }
+    this.setAcceleration(acceleration);
+
     this.addVelocity(this.getAcceleration().multiply(deltaTime));
   }
 
@@ -602,6 +609,15 @@ export default class GameObject {
   }
 
   /**
+   * 이 객체의 가속도를 특정값으로 설정한다.
+   *
+   * @param {Vector} accelration
+   */
+  setAcceleration(accelration) {
+    this.transform.acceleration = accelration;
+  }
+
+  /**
    * 이 객체의 가속도를 반환한다.
    *
    * @returns {Vector}
@@ -697,5 +713,43 @@ export default class GameObject {
     this.childList.forEach((child) => {
       child.destroy();
     });
+  }
+
+  /**
+   * 이 객체 위에 마우스가 올라가 있는지를 반환한다.
+   * 기본적으로 worldSize값과 worldPosition을 이용해 계산한다.
+   *
+   * @returns {boolean}
+   */
+  isMouseOver() {
+    const size = this.getWorldSize();
+    const position = this.getWorldPosition();
+    const leftTop = position.minus(size.multiply(0.5));
+    const rightBottom = position.add(size.multiply(0.5));
+    const mousePos = InputManager.getMousePos();
+    return (
+      leftTop.x < mousePos.x &&
+      mousePos.x < rightBottom.x &&
+      leftTop.y < mousePos.y &&
+      mousePos.y < rightBottom.y
+    );
+  }
+
+  /**
+   * 마우스 왼쪽 버튼으로 이 객체를 클릭했는지를 반환한다.
+   *
+   * @returns {boolean}
+   */
+  isLeftMouseClickThis() {
+    return InputManager.isKeyDown("leftMouse") && this.isMouseOver();
+  }
+
+  /**
+   * 마우스 오른쪽 버튼으로 이 객체를 클릭했는지를 반환한다.
+   *
+   * @returns {boolean}
+   */
+  isRightMouseClickThis() {
+    return InputManager.isKeyDown("rightMouse") && this.isMouseOver();
   }
 }

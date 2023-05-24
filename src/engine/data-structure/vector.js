@@ -13,6 +13,51 @@ export default class Vector {
   }
 
   /**
+   * (0, 0)을 갖는 벡터를 반환합니다.
+   *
+   * @returns {Vector}
+   */
+  static zero() {
+    return new Vector(0, 0);
+  }
+
+  /**
+   * (0, -1)을 갖는 벡터를 반환합니다.
+   *
+   * @returns {Vector}
+   */
+  static up() {
+    return new Vector(0, -1);
+  }
+
+  /**
+   * (0, 1)을 갖는 벡터를 반환합니다.
+   *
+   * @returns {Vector}
+   */
+  static down() {
+    return new Vector(0, 1);
+  }
+
+  /**
+   * (1, 0)을 갖는 벡터를 반환합니다.
+   *
+   * @returns {Vector}
+   */
+  static right() {
+    return new Vector(1, 0);
+  }
+
+  /**
+   * (-1, 0)을 갖는 벡터를 반환합니다.
+   *
+   * @returns {Vector}
+   */
+  static left() {
+    return new Vector(-1, 0);
+  }
+
+  /**
    * 이 벡터와 x축 사이의 각도(degree)를 반환한다.
    *
    * @returns {Vector}
