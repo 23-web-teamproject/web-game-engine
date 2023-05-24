@@ -11,6 +11,7 @@ import Vector from "/src/engine/data-structure/vector.js";
 import { BoxCollider } from "/src/engine/data-structure/collider.js";
 
 import DestroyManager from "/src/engine/core/destroy-manager.js";
+import InputManager from "/src/engine/core/input-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 
@@ -697,5 +698,43 @@ export default class GameObject {
     this.childList.forEach((child) => {
       child.destroy();
     });
+  }
+
+  /**
+   * 이 객체 위에 마우스가 올라가 있는지를 반환한다.
+   * 기본적으로 worldSize값과 worldPosition을 이용해 계산한다.
+   *
+   * @returns {boolean}
+   */
+  isMouseOver() {
+    const size = this.getWorldSize();
+    const position = this.getWorldPosition();
+    const leftTop = position.minus(size.multiply(0.5));
+    const rightBottom = position.add(size.multiply(0.5));
+    const mousePos = InputManager.getMousePos();
+    return (
+      leftTop.x < mousePos.x &&
+      mousePos.x < rightBottom.x &&
+      leftTop.y < mousePos.y &&
+      mousePos.y < rightBottom.y
+    );
+  }
+
+  /**
+   * 마우스 왼쪽 버튼으로 이 객체를 클릭했는지를 반환한다.
+   *
+   * @returns {boolean}
+   */
+  isLeftMouseClickThis() {
+    return InputManager.isKeyDown("leftMouse") && this.isMouseOver();
+  }
+
+  /**
+   * 마우스 오른쪽 버튼으로 이 객체를 클릭했는지를 반환한다.
+   *
+   * @returns {boolean}
+   */
+  isRightMouseClickThis() {
+    return InputManager.isKeyDown("rightMouse") && this.isMouseOver();
   }
 }
