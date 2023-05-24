@@ -15,6 +15,7 @@ export default class Circle extends GameObject {
   /**
    * @constructor
    * @param {object} options
+   * @param {string} [options.name]
    * @param {number} [options.radius]
    * @param {Color} [options.color]
    * @param {number} [options.strokeWidth]

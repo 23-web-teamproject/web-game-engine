@@ -17,6 +17,7 @@ export default class Sprite extends GameObject {
   /**
    * @constructor
    * @param {object} options
+   * @param {string} [options.name]
    * @param {string} [options.imagePath]
    * @param {boolean} [options.isColorOverlayEnable]
    * @param {Color} [options.overlayColor]
