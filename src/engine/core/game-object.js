@@ -21,7 +21,7 @@ import { typeCheck } from "/src/engine/utils.js";
  * 게임에 등장하는 모든 객체의 기본형태다.
  * 게임에 등장하는 모든 객체는 GameObject를 상속받아 구현된다.
  */
-export default class GameObject {
+class GameObject {
   /**
    * @constructor
    * @param {object} [options]
@@ -799,3 +799,5 @@ export default class GameObject {
     return InputManager.isKeyDown("rightMouse") && this.isMouseOver();
   }
 }
+
+export default GameObject;

@@ -11,7 +11,7 @@ import { clamp } from "/src/engine/utils.js";
  *
  * @extends {CollisionResolver}
  */
-export default class CircleCollisionResolver extends CollisionResolver {
+class CircleCollisionResolver extends CollisionResolver {
   /**
    * 주 객체를 등록하여 충돌체크를 진행한다.
    *
@@ -210,3 +210,5 @@ export default class CircleCollisionResolver extends CollisionResolver {
     return new Manifold(this.circle, circle, normal, penetrationDepth);
   }
 }
+
+export default CircleCollisionResolver;

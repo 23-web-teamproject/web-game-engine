@@ -10,7 +10,7 @@ import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
  *
  * @extends {GameObject}
  */
-export default class Rect extends GameObject {
+class Rect extends GameObject {
   /**
    * @constructor
    * @param {object} options
@@ -170,3 +170,5 @@ export default class Rect extends GameObject {
     this.strokeWidth = typeCheckAndClamp(width, "number", 1, 1, 15);
   }
 }
+
+export default Rect;
