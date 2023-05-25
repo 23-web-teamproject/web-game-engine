@@ -38,10 +38,7 @@ export default class GameObject {
    * @param {object} [options.boundary]
    * @param {number} [options.boundary.width]
    * @param {number} [options.boundary.height]
-<<<<<<< HEAD
-=======
    * @param {number} [options.boundary.offset]
->>>>>>> upstream/main
    * @param {object} [options.rigidbody]
    * @param {number} [options.rigidbody.mass=1]
    * @param {number} [options.rigidbody.bounceness=0.5]
@@ -654,8 +651,6 @@ export default class GameObject {
   }
 
   /**
-<<<<<<< HEAD
-=======
    * 이 객체의 화면상 외형의 크기를 반환한다.
    * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
    *
@@ -666,7 +661,6 @@ export default class GameObject {
   }
 
   /**
->>>>>>> upstream/main
    * 이 객체의 외형의 크기를 반환한다.
    * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
    *
@@ -677,15 +671,6 @@ export default class GameObject {
   }
 
   /**
-<<<<<<< HEAD
-   * 이 객체의 화면상 외형의 크기를 반환한다.
-   * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
-   *
-   * @returns {Vector}
-   */
-  getWorldBoundary() {
-    return this.getBoundary().elementMultiply(this.getWorldScale());
-=======
    * 이 객체의 화면상 좌표값에 외형의 오프셋값을 더한 좌표를 반환한다.
    * 이 때 오프셋에도 WorldScale을 적용해 더한다.
    *
@@ -704,7 +689,6 @@ export default class GameObject {
    */
   getColliderOffset() {
     return this.collider.getOffset();
->>>>>>> upstream/main
   }
 
   /**
