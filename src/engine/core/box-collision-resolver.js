@@ -31,14 +31,14 @@ export default class BoxCollisionResolver extends CollisionResolver {
   isCollideWithBox(box) {
     // 단순하게 AABB충돌체크 방식을 사용한다.
     if (
-      this.box.getWorldPosition().x - this.box.getWorldSize().x / 2 >
-        box.getWorldPosition().x + box.getWorldSize().x / 2 ||
-      this.box.getWorldPosition().x + this.box.getWorldSize().x / 2 <
-        box.getWorldPosition().x - box.getWorldSize().x / 2 ||
-      this.box.getWorldPosition().y - this.box.getWorldSize().y / 2 >
-        box.getWorldPosition().y + box.getWorldSize().y / 2 ||
-      this.box.getWorldPosition().y + this.box.getWorldSize().y / 2 <
-        box.getWorldPosition().y - box.getWorldSize().y / 2
+      this.box.getWorldPosition().x - this.box.getWorldBoundary().x / 2 >
+        box.getWorldPosition().x + box.getWorldBoundary().x / 2 ||
+      this.box.getWorldPosition().x + this.box.getWorldBoundary().x / 2 <
+        box.getWorldPosition().x - box.getWorldBoundary().x / 2 ||
+      this.box.getWorldPosition().y - this.box.getWorldBoundary().y / 2 >
+        box.getWorldPosition().y + box.getWorldBoundary().y / 2 ||
+      this.box.getWorldPosition().y + this.box.getWorldBoundary().y / 2 <
+        box.getWorldPosition().y - box.getWorldBoundary().y / 2
     ) {
       return false;
     }
@@ -63,8 +63,9 @@ export default class BoxCollisionResolver extends CollisionResolver {
     // 중심간 차의 절대값이 상자의 주변에 원이 접했을 때의 거리보다 크다면
     // 충돌하지 않은 것이다.
     if (
-      distance.x > this.box.getWorldSize().x / 2 + circle.radius ||
-      distance.y > this.box.getWorldSize().y / 2 + circle.radius
+      distance.x >
+        this.box.getWorldBoundary().x / 2 + circle.getWorldBoundary() ||
+      distance.y > this.box.getWorldBoundary().y / 2 + circle.getWorldBoundary()
     ) {
       return false;
     }
@@ -72,15 +73,17 @@ export default class BoxCollisionResolver extends CollisionResolver {
     // 중심간 차의 절대값이 상자의 크기의 절반보다 작다면
     // 원이 상자 안에 있는 셈이므로 충돌한 것이다.
     if (
-      distance.x <= this.box.getWorldSize().x / 2 ||
-      distance.y <= this.box.getWorldSize().y / 2
+      distance.x <= this.box.getWorldBoundary().x / 2 ||
+      distance.y <= this.box.getWorldBoundary().y / 2
     ) {
       return true;
     }
 
     // 꼭짓점부분에서 충돌이 될 가능성을 검사한다.
-    const d = distance.minus(this.box.getWorldSize().multiply(0.5));
-    return d.squareLength() <= circle.radius * circle.radius;
+    const d = distance.minus(this.box.getWorldBoundary().multiply(0.5));
+    return (
+      d.squareLength() <= circle.getWorldBoundary() * circle.getWorldBoundary()
+    );
   }
 
   /**
@@ -106,13 +109,13 @@ export default class BoxCollisionResolver extends CollisionResolver {
 
     // 충돌된 영역의 가로 길이
     const xOverlap =
-      this.box.getWorldSize().x / 2 +
-      box.getWorldSize().x / 2 -
+      this.box.getWorldBoundary().x / 2 +
+      box.getWorldBoundary().x / 2 -
       Math.abs(distance.x);
     // 충돌된 영역의 세로 길이
     const yOverlap =
-      this.box.getWorldSize().y / 2 +
-      box.getWorldSize().y / 2 -
+      this.box.getWorldBoundary().y / 2 +
+      box.getWorldBoundary().y / 2 -
       Math.abs(distance.y);
 
     if (xOverlap < 0 || yOverlap < 0) {
@@ -167,13 +170,13 @@ export default class BoxCollisionResolver extends CollisionResolver {
     const closest = new Vector(
       clamp(
         distance.x,
-        -this.box.getWorldSize().x / 2,
-        this.box.getWorldSize().x / 2
+        -this.box.getWorldBoundary().x / 2,
+        this.box.getWorldBoundary().x / 2
       ),
       clamp(
         distance.y,
-        -this.box.getWorldSize().y / 2,
-        this.box.getWorldSize().y / 2
+        -this.box.getWorldBoundary().y / 2,
+        this.box.getWorldBoundary().y / 2
       )
     );
 
@@ -192,15 +195,15 @@ export default class BoxCollisionResolver extends CollisionResolver {
         // 사각형에서 원과 가장 가까운 점을 찾아야 하므로
         // 가장 가까운 사각형의 경계를 점으로 선택한다.
         if (closest.x > 0) {
-          closest.x = this.box.getWorldSize().x / 2;
+          closest.x = this.box.getWorldBoundary().x / 2;
         } else {
-          closest.x = -this.box.getWorldSize().x / 2;
+          closest.x = -this.box.getWorldBoundary().x / 2;
         }
       } else {
         if (closest.y > 0) {
-          closest.y = this.box.getWorldSize().y / 2;
+          closest.y = this.box.getWorldBoundary().y / 2;
         } else {
-          closest.y = -this.box.getWorldSize().y / 2;
+          closest.y = -this.box.getWorldBoundary().y / 2;
         }
       }
     }
@@ -209,18 +212,18 @@ export default class BoxCollisionResolver extends CollisionResolver {
     let normal = distance.minus(closest);
     const d = normal.squareLength();
 
-    if (d > circle.radius * circle.radius && !inside) {
+    if (d > circle.getWorldBoundary() * circle.getWorldBoundary() && !inside) {
       return;
     }
 
     if (inside) {
       normal = normal.multiply(-1).normalize();
       // 원이 사각형 안에 있다면 단순하게 충돌 깊이를 반지름 * 2로 설정한다.
-      penetrationDepth = 2 * circle.radius;
+      penetrationDepth = 2 * circle.getWorldBoundary();
     } else {
       normal = normal.multiply(1).normalize();
       // 원이 사각형 밖에 있다면 충돌 깊이를 반지름에서 충돌한 거리를 뺀 값으로 설정한다.
-      penetrationDepth = circle.radius - Math.sqrt(d);
+      penetrationDepth = circle.getWorldBoundary() - Math.sqrt(d);
     }
 
     return new Manifold(this.box, circle, normal, penetrationDepth);

@@ -6,7 +6,7 @@ import RenderManager from "/src/engine/core/render-manager.js";
 import ResourceManager from "/src/engine/core/resource-manager.js";
 
 import Path from "/src/engine/utils/path.js";
-import { typeCheck } from "/src/engine/utils.js";
+import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
 
 /**
  * 화면에 이미지를 그리는 객체다.
@@ -25,6 +25,9 @@ export default class Sprite extends GameObject {
    * @param {boolean} [options.isVisible]
    * @param {Layer} [options.layer]
    * @param {boolean} [options.isPhysicsEnable=false]
+   * @param {object} [options.boundary]
+   * @param {number} [options.boundary.width]
+   * @param {number} [options.boundary.height]
    * @param {object} [options.transform]
    * @param {Vector} [options.transform.position=new Vector(0, 0)]
    * @param {Vector} [options.transform.scale=new Vector(1, 1)]
@@ -52,10 +55,10 @@ export default class Sprite extends GameObject {
       options.imagePath,
       Image,
       () => {
-        // 이미지가 완전히 불러와졌다면 isActive를 true로 만든다.
         this.transform.setSize(
           new Vector(this.image.naturalWidth, this.image.naturalHeight)
         );
+        // 이미지가 완전히 불러와졌다면 isActive를 true로 만든다.
         this.activate();
       }
     );

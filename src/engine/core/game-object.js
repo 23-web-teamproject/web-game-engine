@@ -35,6 +35,9 @@ export default class GameObject {
    * @param {Vector} [options.transform.position=new Vector(0, 0)]
    * @param {Vector} [options.transform.scale=new Vector(1, 1)]
    * @param {number} [options.transform.rotation=0]
+   * @param {object} [options.boundary]
+   * @param {number} [options.boundary.width]
+   * @param {number} [options.boundary.height]
    * @param {object} [options.rigidbody]
    * @param {number} [options.rigidbody.mass=1]
    * @param {number} [options.rigidbody.bounceness=0.5]
@@ -104,13 +107,14 @@ export default class GameObject {
      * @type {boolean}
      */
     this.isPhysicsEnable = typeCheck(options.isPhysicsEnable, "boolean", false);
+
     /**
      * 이 객체의 Collision 타입을 나타낸다.
      * 기본값으로는 상자 형태(BoxCollider)를 사용한다.
      *
-     * @type {Collider}
+     * @type {BoxCollider}
      */
-    this.collider = new BoxCollider();
+    this.collider = new BoxCollider(options.boundary);
     /**
      * 렌더링에 사용될 색상값이다.
      *
@@ -242,7 +246,7 @@ export default class GameObject {
    * 그 후 이 객체의 모든 자식들을 렌더링한다.
    */
   render() {
-    if (this.isActive) {
+    if (this.isActive && this.isVisible) {
       this.beforeDraw();
 
       this.setTransform();
@@ -643,6 +647,26 @@ export default class GameObject {
    */
   getWorldSize() {
     return this.getSize().elementMultiply(this.getWorldScale());
+  }
+
+  /**
+   * 이 객체의 외형의 크기를 반환한다.
+   * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
+   *
+   * @returns {Vector}
+   */
+  getBoundary() {
+    return this.collider.getBoundary();
+  }
+
+  /**
+   * 이 객체의 화면상 외형의 크기를 반환한다.
+   * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
+   *
+   * @returns {Vector}
+   */
+  getWorldBoundary() {
+    return this.getBoundary().elementMultiply(this.getWorldScale());
   }
 
   /**
