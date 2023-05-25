@@ -31,14 +31,18 @@ export default class BoxCollisionResolver extends CollisionResolver {
   isCollideWithBox(box) {
     // 단순하게 AABB충돌체크 방식을 사용한다.
     if (
-      this.box.getWorldPosition().x - this.box.getWorldBoundary().x / 2 >
-        box.getWorldPosition().x + box.getWorldBoundary().x / 2 ||
-      this.box.getWorldPosition().x + this.box.getWorldBoundary().x / 2 <
-        box.getWorldPosition().x - box.getWorldBoundary().x / 2 ||
-      this.box.getWorldPosition().y - this.box.getWorldBoundary().y / 2 >
-        box.getWorldPosition().y + box.getWorldBoundary().y / 2 ||
-      this.box.getWorldPosition().y + this.box.getWorldBoundary().y / 2 <
-        box.getWorldPosition().y - box.getWorldBoundary().y / 2
+      this.box.getColliderWorldPosition().x -
+        this.box.getWorldBoundary().x / 2 >
+        box.getColliderWorldPosition().x + box.getWorldBoundary().x / 2 ||
+      this.box.getColliderWorldPosition().x +
+        this.box.getWorldBoundary().x / 2 <
+        box.getColliderWorldPosition().x - box.getWorldBoundary().x / 2 ||
+      this.box.getColliderWorldPosition().y -
+        this.box.getWorldBoundary().y / 2 >
+        box.getColliderWorldPosition().y + box.getWorldBoundary().y / 2 ||
+      this.box.getColliderWorldPosition().y +
+        this.box.getWorldBoundary().y / 2 <
+        box.getColliderWorldPosition().y - box.getWorldBoundary().y / 2
     ) {
       return false;
     }
@@ -54,8 +58,8 @@ export default class BoxCollisionResolver extends CollisionResolver {
   isCollideWithCircle(circle) {
     // 원의 중심과 상자의 중심간 거리의 차를 구한다.
     const distance = circle
-      .getWorldPosition()
-      .minus(this.box.getWorldPosition());
+      .getColliderWorldPosition()
+      .minus(this.box.getColliderWorldPosition());
 
     distance.x = Math.abs(distance.x);
     distance.y = Math.abs(distance.y);
@@ -105,7 +109,9 @@ export default class BoxCollisionResolver extends CollisionResolver {
    * @returns {Manifold}
    */
   resolveBoxCollision(box) {
-    const distance = box.getWorldPosition().minus(this.box.getWorldPosition());
+    const distance = box
+      .getColliderWorldPosition()
+      .minus(this.box.getColliderWorldPosition());
 
     // 충돌된 영역의 가로 길이
     const xOverlap =
@@ -163,9 +169,9 @@ export default class BoxCollisionResolver extends CollisionResolver {
    * @returns {Manifold}
    */
   resolveCircleCollision(circle) {
-    const rectCenter = this.box.getWorldPosition();
+    const rectCenter = this.box.getColliderWorldPosition();
 
-    const distance = circle.getWorldPosition().minus(rectCenter);
+    const distance = circle.getColliderWorldPosition().minus(rectCenter);
 
     const closest = new Vector(
       clamp(
