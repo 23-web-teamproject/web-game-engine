@@ -6,7 +6,7 @@ import { typeCheck } from "/src/engine/utils.js";
  * GameObject의 좌표, 회전, 규모 등을 나타내기 위해 사용한다.
  * 좌표, 회전, 규모를 한 번에 나타낼 수 있게 matrix형태로 바꾸는 기능도 갖고 있다.
  */
-export default class Transform {
+class Transform {
   /**
    * @constructor
    * @param {object} [options]
@@ -107,3 +107,5 @@ export default class Transform {
     this.size = size;
   }
 }
+
+export default Transform;

@@ -111,7 +111,7 @@ class Particle extends Sprite {
  *
  * @extends {GameObject}
  */
-export default class ParticleEffect extends GameObject {
+class ParticleEffect extends GameObject {
   /**
    * @constructor
    * @param {object} options
@@ -155,7 +155,13 @@ export default class ParticleEffect extends GameObject {
      * 이 값이 3이라면 3초 동안만 파티클 이펙트가 재생된다.
      * 기본값은 0이다.
      */
-    this.duration = typeCheckAndClamp(options.duration, "number", 0, 0, Number.MAX_VALUE);
+    this.duration = typeCheckAndClamp(
+      options.duration,
+      "number",
+      0,
+      0,
+      Number.MAX_VALUE
+    );
     /**
      * 이 값이 true라면 파티클이 점점 크기가 작아지는 효과를 낸다.
      * 기본값은 true다.
@@ -300,7 +306,7 @@ export default class ParticleEffect extends GameObject {
         this.addChild(newParticle);
       }
 
-      if(this.duration > 0 && this.elapsedTime > this.duration) {
+      if (this.duration > 0 && this.elapsedTime > this.duration) {
         this.stop();
       }
     }
@@ -325,3 +331,5 @@ export default class ParticleEffect extends GameObject {
     this.isEnable = false;
   }
 }
+
+export default ParticleEffect;

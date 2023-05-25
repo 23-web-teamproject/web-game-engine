@@ -7,7 +7,7 @@ import { typeCheck } from "/src/engine/utils.js";
  *
  * @extends {GameObject}
  */
-export default class Text extends GameObject {
+class Text extends GameObject {
   /**
    * @constructor
    * @param {object} options
@@ -143,3 +143,5 @@ The Quick Brown Fox Jumps Over The Lazy Dog`
     }
   }
 }
+
+export default Text;

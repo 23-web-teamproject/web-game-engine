@@ -15,7 +15,7 @@ import { Timer, writeErrorMessageOnDocument } from "/src/engine/utils.js";
 /**
  * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
  */
-export default class Engine {
+class Engine {
   /** @type {InputManager} @static */
   static inputManager;
   /** @type {Timer} @static */
@@ -125,3 +125,5 @@ export default class Engine {
     }
   }
 }
+
+export default Engine;
