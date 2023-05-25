@@ -20,5 +20,22 @@ export default class MoverightBlock extends Sprite {
         isStatic: true,
       },
     });
+    const smallBox = new Sprite({
+      name: "right_smallbox",
+      imagePath: "",
+      transform: {
+        position: new Vector(x, y - 15),
+      },
+      isPhysicsEnable: true,
+      rigidbody: {
+        bounciness: 0,
+        isStatic: true,
+      },
+      dimensions: {
+        width: 30,
+        height: 1,
+      },
+    });
   }
 }
+    

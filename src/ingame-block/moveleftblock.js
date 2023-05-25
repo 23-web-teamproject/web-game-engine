@@ -9,6 +9,7 @@ export default class MoveleftBlock extends Sprite {
    */
   constructor(x, y) {
     super({
+      
       name: "moveleftblock",
       imagePath: "/src/ingame-block/moveleftblock.png",
       transform: {
@@ -18,6 +19,22 @@ export default class MoveleftBlock extends Sprite {
       rigidbody: {
         bounceness: 0,
         isStatic: true,
+      },
+    });
+    const smallBox = new Sprite({
+      name: "left_smallbox",
+      imagePath: "",
+      transform: {
+        position: new Vector(x, y - 15),
+      },
+      isPhysicsEnable: true,
+      rigidbody: {
+        bounciness: 0,
+        isStatic: true,
+      },
+      dimensions: {
+        width: 30,
+        height: 1,
       },
     });
   }
