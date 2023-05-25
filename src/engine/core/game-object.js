@@ -242,7 +242,7 @@ export default class GameObject {
    * 그 후 이 객체의 모든 자식들을 렌더링한다.
    */
   render() {
-    if (this.isActive) {
+    if (this.isActive && this.isVisible) {
       this.beforeDraw();
 
       this.setTransform();
