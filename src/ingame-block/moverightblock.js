@@ -16,6 +16,7 @@ export default class MoverightBlock extends Sprite {
       },
       isPhysicsEnable: true,
       rigidbody: {
+        bounceness: 0,
         isStatic: true,
       },
     });

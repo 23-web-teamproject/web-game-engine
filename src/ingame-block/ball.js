@@ -65,11 +65,11 @@ export default class Ball extends Rect {
     }
     if (this.a == 1) {
       this.rigidbody.isGravity = false;
-      this.addPosition(new Vector(4, 0));
+      this.addPosition(new Vector(5, 0));
     }
     if (this.a == -1) {
       this.rigidbody.isGravity = false;
-      this.addPosition(new Vector(-4, 0));
+      this.addPosition(new Vector(-5, 0));
     }
     if (
       (this.getPosition().y >= RenderManager.renderCanvasHeight ||
