@@ -31,8 +31,8 @@ export default class CircleCollisionResolver extends CollisionResolver {
   isCollideWithBox(box) {
     // 원의 중심과 상자의 중심간 거리의 차를 구한다.
     const distance = this.circle
-      .getWorldPosition()
-      .minus(box.getWorldPosition());
+      .getColliderWorldPosition()
+      .minus(box.getColliderWorldPosition());
 
     distance.x = Math.abs(distance.x);
     distance.y = Math.abs(distance.y);
@@ -84,8 +84,8 @@ export default class CircleCollisionResolver extends CollisionResolver {
    */
   isCollideWithCircle(circle) {
     const distance = this.circle
-      .getWorldPosition()
-      .minus(circle.getWorldPosition());
+      .getColliderWorldPosition()
+      .minus(circle.getColliderWorldPosition());
 
     return (
       (this.circle.getWorldBoundary() + circle.getWorldBoundary()) *
@@ -101,9 +101,9 @@ export default class CircleCollisionResolver extends CollisionResolver {
    * @returns {boolean}
    */
   resolveBoxCollision(box) {
-    const rectCenter = box.getWorldPosition();
+    const rectCenter = box.getColliderWorldPosition();
 
-    const distance = this.circle.getWorldPosition().minus(rectCenter);
+    const distance = this.circle.getColliderWorldPosition().minus(rectCenter);
 
     const closest = new Vector(
       clamp(
@@ -178,8 +178,8 @@ export default class CircleCollisionResolver extends CollisionResolver {
    */
   resolveCircleCollision(circle) {
     const distance = circle
-      .getWorldPosition()
-      .minus(this.circle.getWorldPosition());
+      .getColliderWorldPosition()
+      .minus(this.circle.getColliderWorldPosition());
 
     // 두 원의 반지름을 더한 값을 제곱하되 정확한 값을 위해서
     // 제곱근을 씌우진 않는다.
