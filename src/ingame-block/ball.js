@@ -254,18 +254,12 @@ export default class Ball extends Rect {
       this.rigidbody.isGravity = true;
       this.createDeadEffect();
       // SceneManager.loadScene(Stage1);
-    } else if (
-      other.getName() == "moverightblock" &&
-      this.getPosition().y < other.getPosition().y - 15
-    ) {
+    } else if (other.getName() == "right_smallbox") {
       this.a = 1;
       this.rigidbody.isGravity = false;
       this.transform.position.x = other.getPosition().x + 25;
       this.transform.position.y = other.getPosition().y;
-    } else if (
-      other.getName() == "moveleftblock" &&
-      this.getPosition().y < other.getPosition().y - 15
-    ) {
+    } else if (other.getName() == "left_smallbox") {
       this.a = -1;
       this.rigidbody.isGravity = false;
       this.transform.position.x = other.getPosition().x - 25;
