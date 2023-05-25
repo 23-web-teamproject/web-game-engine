@@ -28,6 +28,7 @@ export default class Sprite extends GameObject {
    * @param {object} [options.boundary]
    * @param {number} [options.boundary.width]
    * @param {number} [options.boundary.height]
+   * @param {number} [options.boundary.offset]
    * @param {object} [options.transform]
    * @param {Vector} [options.transform.position=new Vector(0, 0)]
    * @param {Vector} [options.transform.scale=new Vector(1, 1)]
@@ -51,17 +52,13 @@ export default class Sprite extends GameObject {
      *
      * @type {HTMLImageElement}
      */
-    this.image = ResourceManager.loadResource(
-      options.imagePath,
-      Image,
-      () => {
-        this.transform.setSize(
-          new Vector(this.image.naturalWidth, this.image.naturalHeight)
-        );
-        // 이미지가 완전히 불러와졌다면 isActive를 true로 만든다.
-        this.activate();
-      }
-    );
+    this.image = ResourceManager.loadResource(options.imagePath, Image, () => {
+      this.transform.setSize(
+        new Vector(this.image.naturalWidth, this.image.naturalHeight)
+      );
+      // 이미지가 완전히 불러와졌다면 isActive를 true로 만든다.
+      this.activate();
+    });
 
     /**
      * 색상 오버레이를 씌울 것인지를 의미한다.
