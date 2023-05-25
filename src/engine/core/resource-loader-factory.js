@@ -109,7 +109,7 @@ class AudioResourceLoader extends ResourceLoader {
 
     this.addErrorEventListener();
 
-    return resource;
+    return this.resource;
   }
 }
 
@@ -145,7 +145,7 @@ class ImageResourceLoader extends ResourceLoader {
 
     this.addErrorEventListener();
 
-    return resource;
+    return this.resource;
   }
 }
 
