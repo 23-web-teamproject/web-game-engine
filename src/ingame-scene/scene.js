@@ -19,6 +19,7 @@ import disappear_block from "../ingame-block/disappear_block.js";
 import star from "../ingame-block/star.js";
 import MoveleftBlock from "../ingame-block/moveleftblock.js";
 import MoverightBlock from "../ingame-block/moverightblock.js";
+import dashitem from "../ingame-block/dashitem.js";
 export default class Stage1 extends GameObject {
   constructor() {
     super();
@@ -33,6 +34,9 @@ export default class Stage1 extends GameObject {
 
     this.block = new Block(130, 400)
     this.addChild(this.block);
+
+    this.dashitem = new dashitem(160, 300)
+    this.addChild(this.dashitem);
 
     this.block = new Block(160, 400)
     this.addChild(this.block);
