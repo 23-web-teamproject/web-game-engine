@@ -7,7 +7,7 @@ class Collider {
   /**
    * @constructor
    * @param {object} options
-   * @param {Vector} offset
+   * @param {Vector} options.offset
    */
   constructor(options = {}) {
     /**
