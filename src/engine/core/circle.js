@@ -24,6 +24,8 @@ export default class Circle extends GameObject {
    * @param {boolean} [options.isVisible]
    * @param {Layer} [options.layer]
    * @param {boolean} [options.isPhysicsEnable=false]
+   * @param {object} [options.boundary]
+   * @param {number} [options.boundary.radius]
    * @param {object} [options.transform]
    * @param {Vector} [options.transform.position=new Vector(0, 0)]
    * @param {Vector} [options.transform.scale=new Vector(1, 1)]
@@ -83,9 +85,42 @@ export default class Circle extends GameObject {
      */
     this.setStrokeWidth(options.strokeWidth);
     /**
-     * Collision 타입을 원으로 바꾼다.
+     * Collision 타입을 원 형태로 설정한다.
      */
-    this.collider = new CircleCollider();
+    if (typeof options.boundary !== "object") {
+      options.boundary = {};
+    }
+    options.boundary.radius = typeCheck(
+      options.boundary.radius,
+      "number",
+      this.radius
+    );
+    this.collider = new CircleCollider(options.boundary);
+  }
+
+  /**
+   * 원의 외형을 반환한다.
+   * 원의 외형의 크기는 반지름으로 나타내므로, 외형의 반지름이 반환된다.
+   *
+   * @returns {number}
+   */
+  getBoundary() {
+    return this.collider.getBoundary();
+  }
+
+  /**
+   * 원의 화면상 반지름의 길이를 반환한다.
+   * 사실 scale이 Vector라서 정확히는 잘못된 함수다.
+   * 물리엔진에서 scale값을 고려하고 있지만 원에 대해서는 그렇지 않다.
+   * 이 함수에는 worldScale의 x와 y값을 더한 후 2로 나눈 값을 반지름에 곱하고 있다.
+   * 가급적이면 원의 scale을 변경하지 않아야 하고,
+   * 변경하더라도 scale의 x와 y값을 같은 값으로 설정하여야 정상적으로 작동한다.
+   *
+   * @returns {number}
+   */
+  getWorldBoundary() {
+    const worldScale = this.getWorldScale();
+    return this.getBoundary() * ((worldScale.x + worldScale.y) / 2);
   }
 
   /**

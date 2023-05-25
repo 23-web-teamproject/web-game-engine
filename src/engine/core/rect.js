@@ -22,6 +22,9 @@ export default class Rect extends GameObject {
    * @param {Layer} [options.layer]
    * @param {Color} [options.color=Random Color]
    * @param {boolean} [options.isPhysicsEnable=false]
+   * @param {object} [options.boundary]
+   * @param {number} [options.boundary.width]
+   * @param {number} [options.boundary.height]
    * @param {object} [options.transform]
    * @param {Vector} [options.transform.position=new Vector(0, 0)]
    * @param {Vector} [options.transform.scale=new Vector(1, 1)]
@@ -36,6 +39,26 @@ export default class Rect extends GameObject {
    * @param {boolean} [options.rigidbody.isTrigger=false]
    */
   constructor(options = {}) {
+    // 만약 boundary가 주어지지 않았고 width와 height가 주어졌다면
+    // boundary를 width와 height로 설정한다.
+    if (typeof options.boundary !== "object") {
+      options.boundary = {};
+    }
+    if (typeof options.width === "number") {
+      options.boundary.width = typeCheck(
+        options.boundary.width,
+        "number",
+        options.width
+      );
+    }
+    if (typeof options.height === "number") {
+      options.boundary.height = typeCheck(
+        options.boundary.height,
+        "number",
+        options.height
+      );
+    }
+
     super(options);
     /**
      * 사각형의 가로, 세로를 의미한다.
@@ -48,6 +71,22 @@ export default class Rect extends GameObject {
         typeCheck(options.height, "number", 50)
       )
     );
+
+    if (typeof options.boundary !== "object") {
+      options.boundary = new Object();
+    }
+    if (
+      typeof options.boundary.width !== "number" &&
+      typeof options.width === "number"
+    ) {
+      options.boundary.width = typeCheck(options.width, "number", 0);
+    }
+    if (
+      typeof options.boundary.height !== "number" &&
+      typeof options.height === "number"
+    ) {
+      options.boundary.height = typeCheck(options.height, "number", 0);
+    }
     /**
      * 윤곽선을 그릴 것인지를 의미한다.
      * 윤곽선을 그리기 위해서는 옵션에서 strokeColor나
