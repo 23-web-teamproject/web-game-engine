@@ -15,45 +15,45 @@ export default class Vector {
   /**
    * (0, 0)을 갖는 벡터를 반환합니다.
    *
-   * @returns {Vector}
+   * @type {Vector}
    */
-  static zero() {
+  static get zero() {
     return new Vector(0, 0);
   }
 
   /**
    * (0, -1)을 갖는 벡터를 반환합니다.
    *
-   * @returns {Vector}
+   * @type {Vector}
    */
-  static up() {
+  static get up() {
     return new Vector(0, -1);
   }
 
   /**
    * (0, 1)을 갖는 벡터를 반환합니다.
    *
-   * @returns {Vector}
+   * @type {Vector}
    */
-  static down() {
+  static get down() {
     return new Vector(0, 1);
   }
 
   /**
    * (1, 0)을 갖는 벡터를 반환합니다.
    *
-   * @returns {Vector}
+   * @type {Vector}
    */
-  static right() {
+  static get right() {
     return new Vector(1, 0);
   }
 
   /**
    * (-1, 0)을 갖는 벡터를 반환합니다.
    *
-   * @returns {Vector}
+   * @type {Vector}
    */
-  static left() {
+  static get left() {
     return new Vector(-1, 0);
   }
 
