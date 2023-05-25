@@ -186,12 +186,12 @@ export default class Ball extends Rect {
       this.a = 0;
       this.rigidbody.isGravity = true;
       SceneManager.loadScene(Stage1);
-    } else if (other.getName() == "moverightblock") {
+    } else if (other.getName() == "moverightblock" && (this.getPosition().y < other.getPosition().y - 15)) {
       this.a = 1;
       this.rigidbody.isGravity = false;
       this.transform.position.x = other.getPosition().x + 25;
       this.transform.position.y = other.getPosition().y;
-    } else if (other.getName() == "moveleftblock") {
+    } else if (other.getName() == "moveleftblock"  && (this.getPosition().y < other.getPosition().y - 15)) {
       this.a = -1;
       this.rigidbody.isGravity = false;
       this.transform.position.x = other.getPosition().x - 25;
