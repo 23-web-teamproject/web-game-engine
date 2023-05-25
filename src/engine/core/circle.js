@@ -26,6 +26,7 @@ export default class Circle extends GameObject {
    * @param {boolean} [options.isPhysicsEnable=false]
    * @param {object} [options.boundary]
    * @param {number} [options.boundary.radius]
+   * @param {number} [options.boundary.offset]
    * @param {object} [options.transform]
    * @param {Vector} [options.transform.position=new Vector(0, 0)]
    * @param {Vector} [options.transform.scale=new Vector(1, 1)]

@@ -38,6 +38,7 @@ export default class GameObject {
    * @param {object} [options.boundary]
    * @param {number} [options.boundary.width]
    * @param {number} [options.boundary.height]
+   * @param {number} [options.boundary.offset]
    * @param {object} [options.rigidbody]
    * @param {number} [options.rigidbody.mass=1]
    * @param {number} [options.rigidbody.bounceness=0.5]
