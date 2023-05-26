@@ -37,7 +37,7 @@ export default class Ball extends Circle {
     });
     this.collider = new BoxCollider({
       width: 15,
-      height: 15
+      height: 15,
     });
     this.getWorldBoundary = () => {
       return this.getBoundary().elementMultiply(this.getWorldScale());
@@ -245,6 +245,14 @@ export default class Ball extends Circle {
     if (other.getName() == "star") {
       return;
     }
+    // 기본 블록 속에 있는 트리거와 충돌해야지만 위로 뛰어오르도록 한다.
+    // 트리거는 블록 윗부분에만 달려있다.
+    if (other.getName() == "jumpTrigger") {
+      this.a = 0;
+      this.rigidbody.isGravity = true;
+      this.transform.velocity.y = -30;
+    }
+
     if (other.getName() == "jumpblock") {
       this.a = 0;
       this.rigidbody.isGravity = true;
@@ -257,20 +265,18 @@ export default class Ball extends Circle {
     } else if (other.getName() == "right_smallbox") {
       this.a = 1;
       this.rigidbody.isGravity = false;
-      this.transform.position.x = other.getPosition().x + 25;
+      this.transform.position.x = other.getPosition().x + 35;
       this.transform.position.y = other.getPosition().y;
+      this.setVelocity(Vector.zero);
     } else if (other.getName() == "left_smallbox") {
       this.a = -1;
       this.rigidbody.isGravity = false;
-      this.transform.position.x = other.getPosition().x - 25;
+      this.transform.position.x = other.getPosition().x - 35;
       this.transform.position.y = other.getPosition().y;
+      this.setVelocity(Vector.zero);
     } else if (other.getName() == "dashitem") {
       this.itemType = 1;
       this.color = new Color(0, 0, 0, 1);
-    } else {
-      this.a = 0;
-      this.rigidbody.isGravity = true;
-      this.transform.velocity.y = -30;
     }
   }
 }
