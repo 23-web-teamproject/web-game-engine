@@ -277,6 +277,9 @@ export default class Ball extends Circle {
     } else if (other.getName() == "dashitem") {
       this.itemType = 1;
       this.color = new Color(0, 0, 0, 1);
+    } else{
+      this.a = 0;
+      this.rigidbody.isGravity = true;
     }
   }
 }

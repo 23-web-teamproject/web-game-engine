@@ -26,6 +26,7 @@ export default class MoveleftBlock extends GameObject {
     }));
 
     this.addChild(new Sprite({
+      name: "left_smallboximg",
       imagePath: "/src/ingame-block/moveleftblock.png",
       isPhysicsEnable: true,
       transform: {

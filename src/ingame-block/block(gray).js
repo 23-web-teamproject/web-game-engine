@@ -24,6 +24,7 @@ export default class Block extends GameObject {
 
     // 블록 이미지
     this.addChild(new Sprite({
+      name: "block(gray)",
       imagePath: "/src/ingame-block/block(gray).png",
       isPhysicsEnable: true,
       transform: {
