@@ -11,7 +11,7 @@ import { typeCheckAndClamp } from "/src/engine/utils.js";
  *
  * Canvas의 크기, 해상도를 바꾸는 책임도 맡는다.
  */
-export default class RenderManager {
+class RenderManager {
   /**
    * renderCanvas의 id값
    *
@@ -231,3 +231,5 @@ export default class RenderManager {
     return RenderManager.bufferCanvas;
   }
 }
+
+export default RenderManager;

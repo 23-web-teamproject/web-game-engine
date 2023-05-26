@@ -14,7 +14,7 @@
  *               x = x좌표
  *               y = y좌표
  */
-export default class Matrix {
+class Matrix {
   /**
    * 3x3행렬의 기본행렬의 원소중에 
    * a, b, c, d, x, y위치에 해당하는 값이 초기화된다.
@@ -57,3 +57,5 @@ export default class Matrix {
     return result;
   }
 }
+
+export default Matrix;

@@ -11,7 +11,7 @@ import InputManager from "/src/engine/core/input-manager.js";
  *
  * @extends {GameObject}
  */
-export default class Circle extends GameObject {
+class Circle extends GameObject {
   /**
    * @constructor
    * @param {object} options
@@ -177,3 +177,5 @@ export default class Circle extends GameObject {
     return distance.squareLength() < this.radius * this.radius;
   }
 }
+
+export default Circle;

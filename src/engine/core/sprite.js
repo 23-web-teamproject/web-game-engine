@@ -13,7 +13,7 @@ import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
  *
  * @extends {GameObject}
  */
-export default class Sprite extends GameObject {
+class Sprite extends GameObject {
   /**
    * @constructor
    * @param {object} options
@@ -173,3 +173,5 @@ export default class Sprite extends GameObject {
     this.overlayColor = color;
   }
 }
+
+export default Sprite;
