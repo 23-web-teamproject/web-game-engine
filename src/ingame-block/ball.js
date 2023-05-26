@@ -266,13 +266,13 @@ export default class Ball extends Circle {
       this.a = 1;
       this.rigidbody.isGravity = false;
       this.transform.position.x = other.getPosition().x + 35;
-      this.transform.position.y = other.getPosition().y;
+      this.transform.position.y = other.getPosition().y + 15;
       this.setVelocity(Vector.zero);
     } else if (other.getName() == "left_smallbox") {
       this.a = -1;
       this.rigidbody.isGravity = false;
       this.transform.position.x = other.getPosition().x - 35;
-      this.transform.position.y = other.getPosition().y;
+      this.transform.position.y = other.getPosition().y + 15;
       this.setVelocity(Vector.zero);
     } else if (other.getName() == "dashitem") {
       this.itemType = 1;

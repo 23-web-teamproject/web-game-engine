@@ -12,7 +12,7 @@ export default class MoveleftBlock extends GameObject {
 
     this.addChild(new Rect({
       name: "left_smallbox",
-      width: 30,
+      width: 26,
       height: 1,
       transform: {
         position: new Vector(x, y - 15),
