@@ -10,8 +10,9 @@ import {
 } from "/src/engine/module.js";
 
 import { clamp } from "../engine/utils.js";
+import { BoxCollider } from "../engine/data-structure/collider.js";
 
-export default class Ball extends Rect {
+export default class Ball extends Circle {
   /**
    * 플레이어가 조종할 공입니다.
    * 생성자 인자로 공이 스폰될 위치를 지정합니다.
@@ -21,9 +22,10 @@ export default class Ball extends Rect {
    */
   constructor(x, y) {
     super({
-      width: 15,
-      height: 15,
+      radius: 10,
       color: new Color(255, 255, 0, 1),
+      strokeColor: new Color(0, 0, 0, 1),
+      strokeWidth: 1.5,
       transform: {
         position: new Vector(x, y),
       },
@@ -33,17 +35,13 @@ export default class Ball extends Rect {
         isGravity: true,
       },
     });
-    // 사각형은 숨긴다.
-    this.hide();
-
-    // 화면에 보여질 원 그림
-    this.circle = new Circle({
-      radius: 10,
-      color: new Color(255, 255, 0, 1),
-      strokeColor: new Color(0, 0, 0, 1),
-      strokeWidth: 1.5,
+    this.collider = new BoxCollider({
+      width: 15,
+      height: 15
     });
-    this.addChild(this.circle);
+    this.getWorldBoundary = () => {
+      return this.getBoundary().elementMultiply(this.getWorldScale());
+    };
 
     /**
      * 공의 상태를 나타내는 변수
@@ -76,7 +74,7 @@ export default class Ball extends Rect {
      * 0이면 평상시
      * 1이면 대쉬아이템
      */
-    this.itemType = 0;
+    this.itemType = 1;
   }
 
   update(deltaTime) {
@@ -151,7 +149,7 @@ export default class Ball extends Rect {
         this.currentPressedKey === "ArrowLeft"
       ) {
         this.addVelocity(new Vector(-30, 0));
-        this.circle.color = new Color(0, 0, 0, 1);
+        this.color = new Color(0, 0, 0, 1);
         this.removeItem();
       }
       if (
@@ -159,7 +157,7 @@ export default class Ball extends Rect {
         this.currentPressedKey === "ArrowRight"
       ) {
         this.addVelocity(new Vector(30, 0));
-        this.circle.color = new Color(0, 0, 0, 1);
+        this.color = new Color(0, 0, 0, 1);
         this.removeItem();
       }
     }
@@ -172,7 +170,7 @@ export default class Ball extends Rect {
    */
   removeItem() {
     if (this.itemType === 1) {
-      this.circle.color = new Color(255, 255, 0, 1);
+      this.color = new Color(255, 255, 0, 1);
     }
     this.itemType = 0;
   }
@@ -210,6 +208,8 @@ export default class Ball extends Rect {
    * 공이 죽었을 때 나오는 이펙트다.
    */
   createDeadEffect() {
+    this.hide();
+
     if (this.particleEffect === undefined) {
       this.particleEffect = new ParticleEffect({
         isEnable: true,
@@ -266,7 +266,7 @@ export default class Ball extends Rect {
       this.transform.position.y = other.getPosition().y;
     } else if (other.getName() == "dashitem") {
       this.itemType = 1;
-      this.circle.color = new Color(0, 0, 0, 1);
+      this.color = new Color(0, 0, 0, 1);
     } else {
       this.a = 0;
       this.rigidbody.isGravity = true;
