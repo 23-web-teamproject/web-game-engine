@@ -56,6 +56,17 @@ class Sprite extends GameObject {
       this.transform.setSize(
         new Vector(this.image.naturalWidth, this.image.naturalHeight)
       );
+
+      // 외형의 크기가 주어지지 않았다면 이미지의 크기를 외형의 크기로 설정한다.
+      const boundary = this.collider.getBoundary();
+      if (boundary.x === 0) {
+        boundary.x = this.getSize().x;
+      }
+      if (boundary.y === 0) {
+        boundary.y = this.getSize().y;
+      }
+      this.collider.setBoundary(boundary);
+
       // 이미지가 완전히 불러와졌다면 isActive를 true로 만든다.
       this.activate();
     });
