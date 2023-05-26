@@ -73,6 +73,7 @@ export default class Ball extends Circle {
      * 아이템 확인 변수
      * 0이면 평상시
      * 1이면 대쉬아이템
+     * -1이면 점프아이템
      */
     this.itemType = 0;
   }
@@ -161,6 +162,24 @@ export default class Ball extends Circle {
         this.removeItem();
       }
     }
+    else if (this.itemType === -1) {
+      if (
+        this.previousPressedKey === "ArrowLeft" &&
+        this.currentPressedKey === "ArrowLeft"
+      ) {
+        this.addVelocity(new Vector(-3, -30));
+        this.color = new Color(150, 75, 0, 1);
+        this.removeItem();
+      }
+      if (
+        this.previousPressedKey === "ArrowRight" &&
+        this.currentPressedKey === "ArrowRight"
+      ) {
+        this.addVelocity(new Vector(3, -30));
+        this.color = new Color(150, 75, 0, 1);
+        this.removeItem();
+      }
+    }
   }
 
   /**
@@ -169,7 +188,7 @@ export default class Ball extends Circle {
    * 원래대로 되돌린다.
    */
   removeItem() {
-    if (this.itemType === 1) {
+    if (this.itemType !== 0) {
       this.color = new Color(255, 255, 0, 1);
     }
     this.itemType = 0;
@@ -277,7 +296,10 @@ export default class Ball extends Circle {
     } else if (other.getName() == "dashitem") {
       this.itemType = 1;
       this.color = new Color(0, 0, 0, 1);
-    } else{
+    } else if (other.getName() == "jumpitem") {
+      this.itemType = -1;
+      this.color = new Color(150, 75, 0, 1);
+    } else {
       this.a = 0;
       this.rigidbody.isGravity = true;
     }

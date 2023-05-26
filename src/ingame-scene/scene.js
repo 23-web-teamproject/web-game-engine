@@ -20,6 +20,7 @@ import star from "../ingame-block/star.js";
 import MoveleftBlock from "../ingame-block/moveleftblock.js";
 import MoverightBlock from "../ingame-block/moverightblock.js";
 import dashitem from "../ingame-block/dashitem.js";
+import jumpitem from "../ingame-block/jumpitem.js";
 export default class Stage1 extends GameObject {
   constructor() {
     super();
@@ -76,6 +77,9 @@ export default class Stage1 extends GameObject {
 
     this.block = new Block(490, 400)
     this.addChild(this.block);
+
+    this.jumpitem = new jumpitem(490, 350)
+    this.addChild(this.jumpitem);
 
     this.block = new Block(520, 400)
     this.addChild(this.block);
