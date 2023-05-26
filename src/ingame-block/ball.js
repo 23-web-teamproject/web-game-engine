@@ -74,7 +74,7 @@ export default class Ball extends Circle {
      * 0이면 평상시
      * 1이면 대쉬아이템
      */
-    this.itemType = 1;
+    this.itemType = 0;
   }
 
   update(deltaTime) {
