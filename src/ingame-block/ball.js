@@ -167,7 +167,7 @@ export default class Ball extends Circle {
         this.previousPressedKey === "ArrowLeft" &&
         this.currentPressedKey === "ArrowLeft"
       ) {
-        this.addVelocity(new Vector(-3, -40));
+        this.setVelocity(new Vector(-3, -40));
         this.color = new Color(150, 75, 0, 1);
         this.removeItem();
       }
@@ -175,7 +175,7 @@ export default class Ball extends Circle {
         this.previousPressedKey === "ArrowRight" &&
         this.currentPressedKey === "ArrowRight"
       ) {
-        this.addVelocity(new Vector(3, -40));
+        this.setVelocity(new Vector(3, -40));
         this.color = new Color(150, 75, 0, 1);
         this.removeItem();
       }
