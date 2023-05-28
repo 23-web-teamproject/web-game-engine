@@ -6,6 +6,7 @@ import {
   PhysicsManager,
   DestroyManager,
   LayerManager,
+  Debug,
 } from "/src/engine/module.js";
 
 import makeForm from "/src/engine/form.js";
@@ -106,6 +107,8 @@ class Engine {
 
     // isPause를 false로 설정한다.
     Engine.isPause = false;
+
+    Debug.addPauseToggleEventListener();
   }
 
   /**
@@ -113,15 +116,15 @@ class Engine {
    * https://developer.ibm.com/tutorials/wa-build2dphysicsengine/#physics-loop-step
    */
   run() {
-    if (Engine.isPause === false) {
-      try {
-        // 일시정지 상태가 아닐 때에만 엔진을 업데이트한다.
-        // 이전 프레임와 현재 프레임의 시간차를 계산한다.
-        Engine.timer.update();
+    try {
+      // 이전 프레임와 현재 프레임의 시간차를 계산한다.
+      Engine.timer.update();
 
-        // 키의 상태를 업데이트한다.
-        Engine.inputManager.update();
+      // 키의 상태를 업데이트한다.
+      Engine.inputManager.update();
 
+      // 일시정지 상태가 아닐 때에만 엔진을 업데이트한다.
+      if (Engine.isPause === false) {
         // 게임 로직을 처리한다.
         SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
 
@@ -136,15 +139,15 @@ class Engine {
 
         // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
         SceneManager.getCurrentScene().calculateMatrix();
-
-        // 모든 오브젝트를 canvas에 그린다.
-        RenderManager.render();
-
-        // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
-        DestroyManager.destroyAll();
-      } catch (error) {
-        writeErrorMessageOnDocument(error);
       }
+
+      // 모든 오브젝트를 canvas에 그린다.
+      RenderManager.render();
+
+      // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
+      DestroyManager.destroyAll();
+    } catch (error) {
+      writeErrorMessageOnDocument(error);
     }
   }
 }
