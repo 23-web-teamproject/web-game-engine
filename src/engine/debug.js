@@ -3,7 +3,7 @@ import Engine from "/src/engine/engine.js";
 class Debug {
   static addPauseToggleEventListener() {
     document.addEventListener("keydown", (event) => {
-      if(event.ctrlKey && event.altKey && event.key === " "){
+      if(event.ctrlKey && event.key === " "){
         Debug.togglePause();
       }
     })
