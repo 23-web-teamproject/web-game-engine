@@ -106,27 +106,31 @@ export default class Ball extends Circle {
    * 플레이어가 연타했다면 대쉬 아이템을 사용한다.
    */
   useDashItemIfPlayerUseDash() {
-    if (InputManager.isKeyDown("ArrowLeft")) {
+    const isArrowLeftKeyDown = InputManager.isKeyDown("ArrowLeft");
+    const isArrowRightKeyDown = InputManager.isKeyDown("ArrowRight");
+
+    if (isArrowLeftKeyDown || isArrowRightKeyDown) {
       this.previousKeyPressedTime = this.currentKeyPressedTime;
       this.currentKeyPressedTime = Date.now();
       this.previousPressedKey = this.currentPressedKey;
-      this.currentPressedKey = "ArrowLeft";
-    }
-    if (InputManager.isKeyDown("ArrowRight")) {
-      this.previousKeyPressedTime = this.currentKeyPressedTime;
-      this.currentKeyPressedTime = Date.now();
-      this.previousPressedKey = this.currentPressedKey;
-      this.currentPressedKey = "ArrowRight";
-    }
 
-    const deltaTime = this.currentKeyPressedTime - this.previousKeyPressedTime;
+      if (isArrowLeftKeyDown) {
+        this.currentPressedKey = "ArrowLeft";
+      }
+      if (isArrowRightKeyDown) {
+        this.currentPressedKey = "ArrowRight";
+      }
 
-    if (
-      deltaTime < this.dashTimeThreshold &&
-      this.previousPressedKey == this.currentPressedKey &&
-      this.hasItem()
-    ) {
-      this.useItem();
+      const deltaTime =
+        this.currentKeyPressedTime - this.previousKeyPressedTime;
+
+      if (
+        deltaTime < this.dashTimeThreshold &&
+        this.previousPressedKey == this.currentPressedKey &&
+        this.hasItem()
+      ) {
+        this.useItem();
+      }
     }
   }
 
@@ -161,8 +165,7 @@ export default class Ball extends Circle {
         this.color = new Color(0, 0, 0, 1);
         this.removeItem();
       }
-    }
-    else if (this.itemType === -1) {
+    } else if (this.itemType === -1) {
       if (
         this.previousPressedKey === "ArrowLeft" &&
         this.currentPressedKey === "ArrowLeft"
