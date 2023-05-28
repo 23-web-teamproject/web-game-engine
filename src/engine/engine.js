@@ -17,9 +17,19 @@ import { Timer, writeErrorMessageOnDocument } from "/src/engine/utils.js";
  * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
  */
 class Engine {
-  /** @type {InputManager} @static */
+  /**
+   * 입력 이벤트를 관리하는 객체다.
+   *
+   * @type {InputManager}
+   * @static
+   */
   static inputManager;
-  /** @type {Timer} @static */
+  /**
+   * 엔진의 update에서 사용하는 deltaTime을 관리하는 객체다.
+   *
+   * @type {Timer}
+   * @static
+   */
   static timer;
 
   /**
