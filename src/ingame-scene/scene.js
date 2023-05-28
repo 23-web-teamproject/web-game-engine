@@ -21,7 +21,9 @@ import MoveleftBlock from "../ingame-block/moveleftblock.js";
 import MoverightBlock from "../ingame-block/moverightblock.js";
 import dashitem from "../ingame-block/dashitem.js";
 import jumpitem from "../ingame-block/jumpitem.js";
-export default class Stage1 extends GameObject {
+import wall from "../ingame-block/wall.js";
+import movingblcok from "../ingame-block/movingblock.js"
+export default class Stage1 extends GameObject  {
   constructor() {
     super();
     //setAssetFolderPath는 한 번만 실행해도 됩니다.
@@ -92,6 +94,15 @@ export default class Stage1 extends GameObject {
 
     this.moveleftblock = new MoveleftBlock(620, 300)
     this.addChild(this.moveleftblock);
+
+    this.wall = new wall(650,400);
+    this.addChild(this.wall);
+
+    this.wall = new wall(900,400);
+    this.addChild(this.wall);
+
+    this.movingblcok = new movingblcok(700,400)
+    this.addChild(this.movingblcok);
   }
   update(deltaTime) {
     super.update(deltaTime);

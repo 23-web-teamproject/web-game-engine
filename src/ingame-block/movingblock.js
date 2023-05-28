@@ -12,7 +12,7 @@ import {
 } from "/src/engine/module.js";
 import Path from "/src/engine/utils/path.js";
 
-export default class disappear_block extends GameObject {
+export default class movingblcok extends GameObject {
   constructor(x,y) {
     super();
     //setAssetFolderPath는 한 번만 실행해도 됩니다.
@@ -45,16 +45,29 @@ export default class disappear_block extends GameObject {
       rigidbody: {
         isStatic: true,
       },
-      this.direction = 1;
-    });
+     });
+    this.direction = 1;
+
     this.sprite.onCollision = (other) => {
       if (other.getName() === "wall") {
         this.direction *= -1;
       }
     };
-    update() {
-      
-    }
+    
     this.addChild(this.sprite);
+  }
+  update(deltaTime) {
+    super.update(deltaTime);
+    this.movingdirection(this.direction);
+  }
+  movingdirection(direction) {
+    if (direction === 1) {
+      this.rigidbody.isGravity = false;
+      this.addPosition(new Vector(2, 0));
+    }
+    if (direction === -1) {
+      this.rigidbody.isGravity = false;
+      this.addPosition(new Vector(-2, 0));
+    }
   }
 }

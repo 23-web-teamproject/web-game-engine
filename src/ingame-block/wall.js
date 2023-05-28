@@ -1,6 +1,6 @@
 import { Vector, Sprite, GameObject, Rect } from "/src/engine/module.js";
 
-export default class Block extends GameObject {
+export default class wall extends GameObject {
   /**
    * 기본 블록입니다.
    *
@@ -14,7 +14,7 @@ export default class Block extends GameObject {
     this.addChild(new Sprite({
       name: "wall",
       imagePath: "/src/ingame-block/wall.png",
-      isPhysicsEnable: false,
+      isPhysicsEnable: true,
       transform: {
         position: new Vector(x, y),
       },
