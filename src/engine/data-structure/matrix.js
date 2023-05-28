@@ -16,9 +16,9 @@
  */
 class Matrix {
   /**
-   * 3x3행렬의 기본행렬의 원소중에 
+   * 3x3행렬의 기본행렬의 원소중에
    * a, b, c, d, x, y위치에 해당하는 값이 초기화된다.
-   * 
+   *
    * @constructor
    */
   constructor() {
@@ -55,6 +55,23 @@ class Matrix {
     result.d = this.b * other.c + this.d * other.d;
     result.y = this.b * other.x + this.d * other.y + this.y;
     return result;
+  }
+
+  /**
+   * 이 행렬의 역행렬을 구해 반환한다.
+   *
+   * @returns {Matrix}
+   */
+  inverse() {
+    const inverse = new Matrix();
+    const inverseDet = 1 / (this.a * this.d - this.b * this.c);
+    inverse.a = this.d * inverseDet;
+    inverse.b = this.c * inverseDet;
+    inverse.c = this.b * inverseDet;
+    inverse.d = this.a * inverseDet;
+    inverse.x = 0;
+    inverse.y = 0;
+    return inverse;
   }
 }
 

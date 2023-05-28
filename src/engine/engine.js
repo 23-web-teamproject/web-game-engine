@@ -148,7 +148,7 @@ class Engine {
         }
 
         // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
-        SceneManager.getCurrentScene().calculateMatrix();
+        SceneManager.getCurrentScene().updateMatrix();
       }
 
       // 모든 오브젝트를 canvas에 그린다.
