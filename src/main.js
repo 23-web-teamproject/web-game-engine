@@ -2,6 +2,9 @@ import Engine from "/src/engine/engine.js";
 import Scene from "./ingame-scene/scene.js";
 import Stage1 from "./ingame-scene/stage1.js";
 import Stage2 from "./ingame-scene/stage2.js";
+import Stage3 from "./ingame-scene/stage3.js";
+import Stage4 from "./ingame-scene/stage4.js";
+import Stage5 from "./ingame-scene/stage5.js";
 /**
  * main.js는 index.html에서 명시적으로 불러오고 있다.
  * 따라서 절대 지워서는 안된다.
@@ -19,7 +22,7 @@ window.onload = () => {
     height: 720,
     fps: 60,
     title: "gameEngineTitle",
-    scene: Stage2
+    scene: Stage5
   });
   // Engine.initWithForm({
   //   thumbnailImagePath: "/favicon.ico",

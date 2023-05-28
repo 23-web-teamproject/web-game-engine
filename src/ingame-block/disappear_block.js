@@ -21,35 +21,31 @@ export default class disappear_block extends GameObject {
     
     this.rect = new Rect({
     name: "jumpTrigger",
-    width: 30,
-    height: 4,
+    width: 26,
+    height: 1,
     transform: {
-      position: new Vector(x, y - 13),
+      position: new Vector(x, y - 14.5),
     },
     isPhysicsEnable: true,
     rigidbody: {
       isStatic: true,
     },
   });
-  
+  this.sprite = new Sprite({
+    imagePath: "onceblock.png",
+    transform: {
+      position: new Vector(x, y),
+    },
+    isPhysicsEnable: true,
+    rigidbody: {
+      isStatic: true,
+    },
+  });
   this.rect.onCollision = (other) => {
     this.rect.destroy();
+    this.sprite.destroy();
   }
   this.addChild(this.rect);
-    
-    this.sprite = new Sprite({
-      imagePath: "onceblock.png",
-      transform: {
-        position: new Vector(x, y),
-      },
-      isPhysicsEnable: true,
-      rigidbody: {
-        isStatic: true,
-      },
-    });
-    this.sprite.onCollision = (other) => {
-      this.sprite.destroy();
-    };
-    this.addChild(this.sprite);
+  this.addChild(this.sprite);
   }
 }
