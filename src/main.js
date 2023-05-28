@@ -14,8 +14,8 @@ import ExampleScene from "/src/default-scene/scene.js";
  */
 window.onload = () => {
   Engine.init({
-    width: 1280,
-    height: 720,
+    width: 1920,
+    height: 1080,
     fps: 60,
     title: "gameEngineTitle",
     scene: ExampleScene

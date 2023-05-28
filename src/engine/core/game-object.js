@@ -487,36 +487,6 @@ class GameObject {
   }
 
   /**
-   * 바로 x,y좌표를 수정하지 않고 이 객체의 부모의 scale을 조회해야한다.
-   * 부모의 position이 (1,1)에 scale (2,2)이고 자식이 로컬좌표가 (1,1)이라면
-   * 실제 좌표는 (3,3)이다.
-   * 여기서 (4,4)으로 이동한다고 할 때 부모의 position과 scale을 기준으로 하는 좌표축에서
-   * (1,1) + (2,2) * (x,y) = (4,4)이므로 
-   * 1+2x=4, 2x=3, x=1.5
-   * 1+2y=4, 2y=3, y=1.5
-   * 이다.
-   * 최종적으로는 4,4에 배치될 예정이지만 로컬 좌표는 (1.5,1.5)가 된다.
-   * 
-   * parent matrix
-   * 2 0 1
-   * 0 2 1
-   * 0 0 1
-   * local matrix?
-   * 1 0 1
-   * 0 1 1
-   * 0 0 1
-   * 상속으로 인해 형성된 matrix
-   * 2 0 3
-   * 0 2 3
-   * 0 0 1
-   *
-   * 계산된 좌표인 1.5,1.5대입
-   * 1 0 1.5
-   * 0 1 1.5
-   * 0 0   1
-   * 2 0 1   1 0 1.5   2 0 4
-   * 0 2 1 * 0 1 1.5 = 0 2 4
-   * 0 0 1   0 0   1   0 0 1
    * parent는 알고 있고, 결과가 될 x,y좌표를 알고 있다.
    * P * L = R
    * L = P^-1 * R
@@ -525,13 +495,12 @@ class GameObject {
    */
   setPosition(position) {
     if(this.hasParentGameObject()) {
-      const parentMatrix = this.parent.getMatrix();
-      const inverseOfParentMatrix = parentMatrix.inverse();
+      const inverseOfParentMatrix = this.parent.getMatrix().inverse();
       this.matrix.x = position.x;
       this.matrix.y = position.y;
-      this.localMatrix = inverseOfParentMatrix.multiply(this.matrix);
-      this.setLocalPosition(new Vector(this.localMatrix.x, this.localMatrix.y));
-      console.log(this.localMatrix, this.matrix);
+      const result = inverseOfParentMatrix.multiply(this.matrix);
+      this.setLocalPosition(new Vector(result.x, result.y));
+      console.log(inverseOfParentMatrix, this.matrix);
     } else {
       this.setLocalPosition(position);
     }
@@ -544,6 +513,7 @@ class GameObject {
    */
   setLocalPosition(position) {
     this.transform.position = position;
+    this.updateLocalMatrix();
   }
 
   /**

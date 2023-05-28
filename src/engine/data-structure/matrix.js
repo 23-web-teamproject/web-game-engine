@@ -59,6 +59,9 @@ class Matrix {
 
   /**
    * 이 행렬의 역행렬을 구해 반환한다.
+   * a c x         1      d -c cy-dx
+   * b d y ^-1 = ----- * -b  a bx-ay
+   * 0 0 1       ad-cb    0  0     1
    *
    * @returns {Matrix}
    */
@@ -66,11 +69,11 @@ class Matrix {
     const inverse = new Matrix();
     const inverseDet = 1 / (this.a * this.d - this.b * this.c);
     inverse.a = this.d * inverseDet;
-    inverse.b = this.c * inverseDet;
-    inverse.c = this.b * inverseDet;
+    inverse.b = -this.b * inverseDet;
+    inverse.c = -this.c * inverseDet;
     inverse.d = this.a * inverseDet;
-    inverse.x = 0;
-    inverse.y = 0;
+    inverse.x = (this.c * this.y) - (this.d * this.x) * inverseDet;
+    inverse.y = (this.b * this.x) - (this.a * this.y) * inverseDet;
     return inverse;
   }
 }

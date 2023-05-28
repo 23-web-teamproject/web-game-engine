@@ -61,8 +61,8 @@ export default class ExampleScene extends GameObject {
       width: 100, height: 100,
       color: new Color(255, 0, 0, 1),
       transform: {
-        position: new Vector(300,300),
-        // scale: new Vector(2, 2)
+        position: new Vector(100,100),
+        scale: new Vector(2, 2)
       }
     });
     this.addChild(this.rect);
@@ -79,21 +79,17 @@ export default class ExampleScene extends GameObject {
       transform: {
         position: new Vector(600,600)
       }
-    }))
+    }));
   }
 
   update(deltaTime){
     if(InputManager.isKeyDown("d")){
       // this.rect2.addRotation(15);
-      this.rect2.setPosition(new Vector(300, 300)); // localposition이 (0, 0)이 되어야함
+      this.rect2.setPosition(new Vector(400, 400)); // localposition이 (100,100)이 되어야함
     }
     if(InputManager.isKeyDown("e")){
       // this.rect.addLocalPosition(new Vector(10, 0));
       this.rect.addRotation(15);
-    }
-    if(InputManager.isKeyDown("`")){
-      console.log(this.rect2.getPosition(), this.rect2.getLocalPosition());
-      Debug.pause();
     }
   }
 }
