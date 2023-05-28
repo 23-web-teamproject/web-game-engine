@@ -43,7 +43,7 @@ export default class movingblcok extends GameObject {
       },
       isPhysicsEnable: true,
       rigidbody: {
-        isStatic: true,
+        isStatic: false,
       },
      });
     this.direction = 1;
