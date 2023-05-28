@@ -141,13 +141,6 @@ class GameObject {
      */
     this.matrix = this.transform.toMatrix();
     /**
-     * 이전 프레임의 matrix와 현재 프레임의 matrix를 선형보간하기 위해
-     * 이전 프레임의 matrix를 저장해야한다.
-     *
-     * @type {Matrix}
-     */
-    this.previousMatrix = this.transform.toMatrix();
-    /**
      * 이 객체의 자식들을 저장할 테이블이다.
      *
      * @type {array}
