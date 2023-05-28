@@ -539,6 +539,7 @@ class GameObject {
    */
   addRotation(degree) {
     this.transform.rotation += degree;
+    this.transform.rotation = this.transform.rotation % 360;
   }
 
   /**
