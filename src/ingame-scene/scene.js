@@ -23,7 +23,7 @@ import dashitem from "../ingame-block/dashitem.js";
 import jumpitem from "../ingame-block/jumpitem.js";
 import wall from "../ingame-block/wall.js";
 import movingblcok from "../ingame-block/movingblock.js"
-export default class Stage1 extends GameObject  {
+export default class Scene extends GameObject  {
   constructor() {
     super();
     //setAssetFolderPath는 한 번만 실행해도 됩니다.
