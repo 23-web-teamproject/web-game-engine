@@ -4,19 +4,17 @@ class Debug {
   static addPauseToggleEventListener() {
     document.addEventListener("keydown", (event) => {
       if(event.ctrlKey && event.altKey && event.key === " "){
-        if(Engine.isPause) {
-          Debug.resume();
-        } else {
-          Debug.pause();
-        }
+        Debug.togglePause();
       }
     })
   }
-  /**
-   * 엔진을 일시정지한다.
-   */
-  static pause() {
-    Engine.isPause = true;
+
+  static togglePause() {
+    if(Engine.isPause) {
+      Debug.resume();
+    } else {
+      Debug.pause();
+    }
   }
 
   /**
@@ -24,6 +22,13 @@ class Debug {
    */
   static resume() {
     Engine.isPause = false;
+  }
+
+  /**
+   * 엔진을 일시정지한다.
+   */
+  static pause() {
+    Engine.isPause = true;
   }
 }
 
