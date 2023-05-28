@@ -21,6 +21,15 @@ class Engine {
   /** @type {Timer} @static */
   static timer;
 
+  /**
+   * 이 변수가 true라면 엔진을 일시정지한다.
+   * 기본값은 false다.
+   *
+   * @type {boolean}
+   * @static
+   */
+  static isPause;
+
   constructor() {}
 
   /**
@@ -42,12 +51,8 @@ class Engine {
       // 페이지의 아이콘을 정한다.
       HTMLManager.setFavicon(settings.faviconPath);
 
-      // InputManager를 초기화한다.
-      Engine.inputManager = new InputManager();
-
-      // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
-      Engine.timer = new Timer();
-      Engine.timer.setFps(settings.fps);
+      // 엔진의 static 변수들을 초기화한다.
+      Engine.initAllStaticVariable(settings);
 
       // canvas의 해상도를 변경한다.
       RenderManager.changeResolution(settings.width, settings.height);
@@ -89,39 +94,57 @@ class Engine {
   }
 
   /**
+   * 엔진의 모든 static 변수들을 초기화한다.
+   */
+  static initAllStaticVariable(settings) {
+    // InputManager를 초기화한다.
+    Engine.inputManager = new InputManager();
+
+    // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
+    Engine.timer = new Timer();
+    Engine.timer.setFps(settings.fps);
+
+    // isPause를 false로 설정한다.
+    Engine.isPause = false;
+  }
+
+  /**
    * 게임 파이프라인에 대해서는 이 게시글을 참고했다.
    * https://developer.ibm.com/tutorials/wa-build2dphysicsengine/#physics-loop-step
    */
   run() {
-    try {
-      // 이전 프레임와 현재 프레임의 시간차를 계산한다.
-      Engine.timer.update();
+    if (Engine.isPause === false) {
+      try {
+        // 일시정지 상태가 아닐 때에만 엔진을 업데이트한다.
+        // 이전 프레임와 현재 프레임의 시간차를 계산한다.
+        Engine.timer.update();
 
-      // 키의 상태를 업데이트한다.
-      Engine.inputManager.update();
+        // 키의 상태를 업데이트한다.
+        Engine.inputManager.update();
 
-      // 게임 로직을 처리한다.
-      SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
+        // 게임 로직을 처리한다.
+        SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
 
-      // 물리 효과를 적용한다.
-      while (Engine.timer.accumulatedTime > Engine.timer.fixedDeltaTime) {
-        PhysicsManager.update(
-          SceneManager.getCurrentScene(),
-          Engine.timer.fixedDeltaTime
-        );
-        Engine.timer.accumulatedTime -= Engine.timer.fixedDeltaTime;
+        // 물리 효과를 적용한다.
+        while (Engine.timer.accumulatedTime > Engine.timer.fixedDeltaTime) {
+          PhysicsManager.update(
+            SceneManager.getCurrentScene(),
+            Engine.timer.fixedDeltaTime
+          );
+          Engine.timer.accumulatedTime -= Engine.timer.fixedDeltaTime;
+        }
+
+        // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
+        SceneManager.getCurrentScene().calculateMatrix();
+
+        // 모든 오브젝트를 canvas에 그린다.
+        RenderManager.render();
+
+        // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
+        DestroyManager.destroyAll();
+      } catch (error) {
+        writeErrorMessageOnDocument(error);
       }
-
-      // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
-      SceneManager.getCurrentScene().calculateMatrix();
-
-      // 모든 오브젝트를 canvas에 그린다.
-      RenderManager.render();
-
-      // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
-      DestroyManager.destroyAll();
-    } catch (error) {
-      writeErrorMessageOnDocument(error);
     }
   }
 }
