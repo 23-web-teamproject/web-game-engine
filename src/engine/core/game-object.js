@@ -566,35 +566,35 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 크기를 특정값만큼 변경한다.
+   * 로컬 좌표계의 크기를 특정값만큼 변경한다.
    *
-   * @param {Vector} 이 객체의 규모에 더해질 규모값
+   * @param {Vector} scale - 변경할 로컬 좌표계의 크기
    */
-  addScale(scale) {
+  addLocalScale(scale) {
     this.transform.scale = this.transform.scale.add(scale);
   }
 
   /**
-   * 이 객체의 크기를 특정값으로 설정한다.
+   * 로컬 좌표계의 크기를 특정값으로 변경한다.
    *
-   * @param {Vector} 이 객체의 규모로 설정될 규모값
+   * @param {Vector} scale - 이 객체의 규모로 설정될 규모값
    */
-  setScale(scale) {
+  setLocalScale(scale) {
     this.transform.scale = scale;
   }
 
   /**
-   * 이 객체의 규모(스케일값)값을 반환한다.
-   * 크기(size)를 반환하는게 아니다!
+   * 로컬 좌표계의 크기를 반환한다.
    *
    * @returns {Vector}
    */
-  getScale() {
+  getLocalScale() {
     return this.transform.scale;
   }
 
   /**
-   * 이 객체의 화면상 규모값을 반환한다.
+   * 이 객체의 matrix에서 scale을 추출해 반환한다.
+   * 월드 좌표계에서 이 객체의 크기를 구하기 위해 사용한다.
    *
    * @returns {Vector}
    */
@@ -609,35 +609,35 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 각도(degree)를 특정값만큼 변경한다.
+   * 로컬 좌표계에서 이 객체의 각도(degree)를 특정값만큼 변경한다.
    *
    * @param {number} degree - 이 객체의 각도에 더해질 각도값(degree)
    */
-  addRotation(degree) {
+  addLocalRotation(degree) {
     this.transform.rotation += degree;
     this.transform.rotation = this.transform.rotation % 360;
   }
 
   /**
-   * 이 객체의 각도(degree)를 특정값으로 설정한다.
+   * 로컬 좌표계에서 이 객체의 각도(degree)를 특정값으로 설정한다.
    *
    * @param {number} degree - 이 객체의 각도로 설정될 각도값(degree)
    */
-  setRotation(degree) {
+  setLocalRotation(degree) {
     this.transform.rotation = degree;
   }
 
   /**
-   * 이 객체의 각도(degree)를 반환한다.
+   * 로컬 좌표계에서 이 객체의 각도(degree)를 반환한다.
    *
    * @returns {number}
    */
-  getRotation() {
+  getLocalRotation() {
     return this.transform.rotation;
   }
 
   /**
-   * 이 객체의 화면상 각도(degree)를 반환한다.
+   * 월드 좌표계에서 이 객체의 각도(degree)를 반환한다.
    *
    * @return {number}
    */
@@ -702,62 +702,41 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 물리적 크기를 반환한다.
-  *
-  * @returns {Vector}
-  */
- getLocalSize() {
-   return this.transform.size;
-  }
-  
-  /**
-   * TODO
-   * size는 이미 matrix에 들어있다. scale을 또 곱할 필요는 없다.
-   * 
-   * 이 객체의 화면상 물리적 크기를 반환한다.
-   * 이 객체의 크기에 화면상 규모를 곱한 값을 반환하게 된다.
+   * 월드 좌표계에서 이 객체의 물리적 크기를 반환한다.
+   * 로컬 좌표계에서 이 객체의 크기를 구한 후,
+   * 월드 좌표계의 scale에 곱한다.
    *
    * @returns {Vector}
    */
   getSize() {
-    return this.transform.size;
-    // return this.getLocalSize().elementMultiply(this.getWorldScale());
+    return this.transform.size.elementMultiply(this.getWorldScale());
   }
 
   /**
-   * 이 객체의 화면상 외형의 크기를 반환한다.
+   * 월드 좌표계에서 이 객체의 외형의 크기를 반환한다.
    * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
+   * 만약 GameObject를 상속받는 객체에서 다른 Collider를 사용한다면,
+   * 이 함수를 재정의해야한다.
    *
    * @returns {Vector}
    */
   getBoundary() {
-    return this.getLocalBoundary().elementMultiply(this.getWorldScale());
+    return this.collider.getBoundary().elementMultiply(this.getWorldScale());
   }
 
   /**
-   * 이 객체의 외형의 크기를 반환한다.
-   * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
-   *
-   * @returns {Vector}
-   */
-  getLocalBoundary() {
-    return this.collider.getBoundary();
-  }
-
-  /**
-   * 이 객체의 화면상 좌표값에 외형의 오프셋값을 더한 좌표를 반환한다.
-   * 이 때 오프셋에도 WorldScale을 적용해 더한다.
+   * 월드 좌표계에서 이 객체의 좌표값에 Collider의
+   * 월드 좌표계에서의 오프셋값을 더한 좌표를 반환한다.
    *
    * @returns {Vector}
    */
   getColliderPosition() {
-    return this.getPosition().add(
-      this.getColliderOffset().elementMultiply(this.getWorldScale())
-    );
+    return this.getPosition().add(this.getColliderOffset());
   }
 
   /**
-   * 이 객체의 외형의 오프셋값을 반환한다.
+   * 월드 좌표계에서 Collider의 오프셋을 반환한다.
+   * 이 때 오프셋에 WorldScale을 적용한다.
    *
    * @returns {Vector}
    */

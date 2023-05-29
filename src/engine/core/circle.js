@@ -100,17 +100,10 @@ class Circle extends GameObject {
   }
 
   /**
-   * 원의 외형을 반환한다.
-   * 원의 외형의 크기는 반지름으로 나타내므로, 외형의 반지름이 반환된다.
+   * 월드 좌표계에서 원의 외형을 반환한다.
+   * 원의 외형의 크기는 반지름으로 나타내므로,
+   * 월드 좌표계에서의 외형의 반지름이 반환된다.
    *
-   * @returns {number}
-   */
-  getBoundary() {
-    return this.collider.getBoundary();
-  }
-
-  /**
-   * 원의 화면상 반지름의 길이를 반환한다.
    * 사실 scale이 Vector라서 정확히는 잘못된 함수다.
    * 물리엔진에서 scale값을 고려하고 있지만 원에 대해서는 그렇지 않다.
    * 이 함수에는 worldScale의 x와 y값을 더한 후 2로 나눈 값을 반지름에 곱하고 있다.
@@ -119,9 +112,9 @@ class Circle extends GameObject {
    *
    * @returns {number}
    */
-  getWorldBoundary() {
+  getBoundary() {
     const worldScale = this.getWorldScale();
-    return this.getBoundary() * ((worldScale.x + worldScale.y) / 2);
+    return this.collider.getBoundary() * ((worldScale.x + worldScale.y) / 2);
   }
 
   /**
