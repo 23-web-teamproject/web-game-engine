@@ -208,7 +208,10 @@ class InputManager {
    * @returns {Vector}
    */
   static getMousePos() {
-    return InputManager.mousePosition;
+    const ratio =
+      RenderManager.getRenderCanvas().height /
+      RenderManager.getActualRenderCanvasSize().y;
+    return InputManager.mousePosition.multiply(ratio);
   }
 }
 
