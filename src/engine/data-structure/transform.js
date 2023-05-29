@@ -75,8 +75,9 @@ class Transform {
   toMatrix() {
     // 먼저 현재 좌표를 행렬에 저장한다.
     let matrix = new Matrix();
-    matrix.x = this.position.x;
-    matrix.y = this.position.y;
+    const positionMatrix = new Matrix();
+    positionMatrix.x = this.position.x;
+    positionMatrix.y = this.position.y;
 
     // 회전변환을 한다.
     const rotateMatrix = new Matrix();
@@ -87,12 +88,13 @@ class Transform {
     rotateMatrix.b = sin;
     rotateMatrix.c = -sin;
     rotateMatrix.d = cos;
-    matrix = matrix.multiply(rotateMatrix);
-
+    
     // 크기변환을 한다.
     const scaleMatrix = new Matrix();
     scaleMatrix.a = this.scale.x;
     scaleMatrix.d = this.scale.y;
+    matrix = matrix.multiply(positionMatrix);
+    matrix = matrix.multiply(rotateMatrix);
     matrix = matrix.multiply(scaleMatrix);
 
     return matrix;
