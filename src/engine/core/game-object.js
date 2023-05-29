@@ -221,21 +221,22 @@ class GameObject {
    * 이 객체의 자식들의 matrix도 업데이트한다.
    */
   updateMatrix() {
-    this.calculateMatrix();
+    if (this.isActive) {
+      this.calculateMatrix();
 
-    this.childList.forEach((child) => {
-      child.updateMatrix();
-    });
+      this.childList.forEach((child) => {
+        child.updateMatrix();
+      });
+    }
   }
 
   calculateMatrix() {
-    if (this.isActive) {
-      this.updateLocalMatrix();
-      if (this.hasParentGameObject()) {
-        this.multiplyParentMatrix();
-      } else {
-        this.matrix = this.localMatrix;
-      }
+    this.updateLocalMatrix();
+
+    if (this.hasParentGameObject()) {
+      this.multiplyParentMatrix();
+    } else {
+      this.matrix = this.localMatrix;
     }
   }
 
@@ -261,11 +262,12 @@ class GameObject {
   }
 
   /**
-   * 먼저 선형보간한 matrix를 사용해 context에 등록한다.
-   * 그 다음 draw()를 통해 물체를 렌더링한다.
+   * beforeDraw로 전처리 과정을 거친 후,
+   * draw()를 통해 객체마다 정의된 방법으로 객체를 렌더링한다.
    * 이 객체를 상속받은 Rect나 Circle처럼 자식객체에 따라
    * 각각 다른 렌더링이 수행된다.
    * 그 후 이 객체의 모든 자식들을 렌더링한다.
+   * 모든 렌더링이 끝나면 afterDraw로 전처리를 해제한다.
    */
   render() {
     if (this.isActive && this.isVisible) {
