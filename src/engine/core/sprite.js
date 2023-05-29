@@ -60,10 +60,10 @@ class Sprite extends GameObject {
       // 외형의 크기가 주어지지 않았다면 이미지의 크기를 외형의 크기로 설정한다.
       const boundary = this.collider.getBoundary();
       if (boundary.x === 0) {
-        boundary.x = this.getSize().x;
+        boundary.x = this.getLocalSize().x;
       }
       if (boundary.y === 0) {
-        boundary.y = this.getSize().y;
+        boundary.y = this.getLocalSize().y;
       }
       this.collider.setBoundary(boundary);
 
@@ -118,7 +118,7 @@ class Sprite extends GameObject {
   draw() {
     if (this.isColorOverlayEnable) {
       // 버퍼 캔버스의 크기를 현재 이미지의 크기로 설정한다.
-      const size = this.getSize();
+      const size = this.getLocalSize();
 
       // 버퍼 캔버스를 초기화한다.
       const buffer = RenderManager.getBufferCanvas();
@@ -144,8 +144,8 @@ class Sprite extends GameObject {
     } else {
       this.context2d.drawImage(
         this.image,
-        -this.getSize().x / 2,
-        -this.getSize().y / 2
+        -this.getLocalSize().x / 2,
+        -this.getLocalSize().y / 2
       );
     }
   }

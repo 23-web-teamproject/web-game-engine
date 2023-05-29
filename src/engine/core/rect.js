@@ -137,12 +137,8 @@ class Rect extends GameObject {
       ${this.color.g},
       ${this.color.b}
       )`;
-    this.context2d.fillRect(
-      -this.getSize().x / 2,
-      -this.getSize().y / 2,
-      this.getSize().x,
-      this.getSize().y
-    );
+    const size = this.getSize();
+    this.context2d.fillRect(-size.x / 2, -size.y / 2, size.x, size.y);
 
     // 윤곽선을 그리도록 설정했다면 윤곽선을 렌더링한다.
     if (this.isStroke) {
@@ -153,10 +149,10 @@ class Rect extends GameObject {
         ${this.strokeColor.b}
         )`;
       this.context2d.strokeRect(
-        this.strokeWidth / 2 - this.getSize().x / 2,
-        this.strokeWidth / 2 - this.getSize().y / 2,
-        this.getSize().x - this.strokeWidth,
-        this.getSize().y - this.strokeWidth
+        this.strokeWidth / 2 - size.x / 2,
+        this.strokeWidth / 2 - size.y / 2,
+        size.x - this.strokeWidth,
+        size.y - this.strokeWidth
       );
     }
   }

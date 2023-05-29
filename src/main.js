@@ -13,16 +13,11 @@ import ExampleScene from "/src/default-scene/scene.js";
  * Engine.initWithForm()으로 form을 이용해 엔진을 초기화할 수 있다.
  */
 window.onload = () => {
-  // Engine.init({
-  //   width: 1280,
-  //   height: 720,
-  //   fps: 60,
-  //   title: "gameEngineTitle",
-  //   scene: ExampleScene
-  // });
-  Engine.initWithForm({
-    thumbnailImagePath: "/favicon.ico",
-    title: "gameEngine",
+  Engine.init({
+    width: 1920,
+    height: 1080,
+    fps: 60,
+    title: "gameEngineTitle",
     scene: ExampleScene
   });
 };
