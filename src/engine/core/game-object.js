@@ -221,21 +221,22 @@ class GameObject {
    * 이 객체의 자식들의 matrix도 업데이트한다.
    */
   updateMatrix() {
-    this.calculateMatrix();
+    if (this.isActive) {
+      this.calculateMatrix();
 
-    this.childList.forEach((child) => {
-      child.updateMatrix();
-    });
+      this.childList.forEach((child) => {
+        child.updateMatrix();
+      });
+    }
   }
 
   calculateMatrix() {
-    if (this.isActive) {
-      this.updateLocalMatrix();
-      if (this.hasParentGameObject()) {
-        this.multiplyParentMatrix();
-      } else {
-        this.matrix = this.localMatrix;
-      }
+    this.updateLocalMatrix();
+
+    if (this.hasParentGameObject()) {
+      this.multiplyParentMatrix();
+    } else {
+      this.matrix = this.localMatrix;
     }
   }
 

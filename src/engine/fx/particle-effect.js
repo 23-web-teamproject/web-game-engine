@@ -67,6 +67,8 @@ class Particle extends Sprite {
    * @param {number} deltaTime - 이전 프레임와 현재 프레임의 시간차
    */
   update(deltaTime) {
+    super.update(deltaTime);
+
     this.fadeAway();
     if (this.isPhysicsEnable === false) {
       this.spreadOut(deltaTime);
@@ -84,7 +86,7 @@ class Particle extends Sprite {
    */
   fadeAway() {
     if (this.isScaleFade) {
-      this.setScale(
+      this.setLocalScale(
         new Vector(
           this.lifeTime / this.initialLifeTime,
           this.lifeTime / this.initialLifeTime
@@ -292,24 +294,29 @@ class ParticleEffect extends GameObject {
       // 누적된 시간이 unitTime보다 커질 때에만 파티클을 생성한다.
       if (this.accumulatedTime > this.unitTime) {
         this.accumulatedTime %= this.unitTime;
-        const options = {
-          direction: this.direction,
-          diffuseness: this.diffuseness,
-          speed: this.speed,
-          lifeTime: this.lifeTime,
-          isPhysicsEnable: this.isParticlePhysicsEnable,
-          isAlphaFade: this.isAlphaFade,
-          isScaleFade: this.isScaleFade,
-          imagePath: this.imagePath,
-        };
-        const newParticle = new Particle(options);
-        this.addChild(newParticle);
+        this.createParticle();
       }
 
       if (this.duration > 0 && this.elapsedTime > this.duration) {
         this.stop();
       }
     }
+  }
+
+  createParticle() {
+    const options = {
+      direction: this.direction,
+      diffuseness: this.diffuseness,
+      speed: this.speed,
+      lifeTime: this.lifeTime,
+      isPhysicsEnable: this.isParticlePhysicsEnable,
+      isAlphaFade: this.isAlphaFade,
+      isScaleFade: this.isScaleFade,
+      imagePath: this.imagePath,
+    };
+    const newParticle = new Particle(options);
+    this.addChild(newParticle);
+    console.log(newParticle.isActive, newParticle.hasParentGameObject());
   }
 
   /**

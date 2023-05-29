@@ -135,6 +135,9 @@ class Engine {
 
       // 일시정지 상태가 아닐 때에만 엔진을 업데이트한다.
       if (Engine.isPause === false) {
+        // 씬의 모든 객체들의 matrix를 업데이트한다.
+        SceneManager.getCurrentScene().updateMatrix();
+
         // 게임 로직을 처리한다.
         SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
 
@@ -146,9 +149,6 @@ class Engine {
           );
           Engine.timer.accumulatedTime -= Engine.timer.fixedDeltaTime;
         }
-
-        // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
-        SceneManager.getCurrentScene().updateMatrix();
       }
 
       // 모든 오브젝트를 canvas에 그린다.
