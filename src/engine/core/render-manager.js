@@ -1,3 +1,4 @@
+import Vector from "/src/engine/data-structure/vector.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 
 import { typeCheckAndClamp } from "/src/engine/utils.js";
@@ -172,6 +173,20 @@ class RenderManager {
     const root = document.querySelector(":root");
     root.style.setProperty("--render-canvas-width", width);
     root.style.setProperty("--render-canvas-height", height);
+  }
+
+  /**
+   * 화면상으로 보이는 renderCanvas의 크기를 반환한다.
+   * 앞서 화면 크기에 따라 변경한 renderCanvas의 css변수중
+   * --render-canvas-width와 --render-canvas-height를 말한다.
+   *
+   * @returns {Vector}
+   */
+  static getActualRenderCanvasSize() {
+    const root = document.querySelector(":root");
+    const actualWidth = root.style.getPropertyValue("--render-canvas-width");
+    const actualHeight = root.style.getPropertyValue("--render-canvas-height");
+    return new Vector(actualWidth, actualHeight);
   }
 
   /**

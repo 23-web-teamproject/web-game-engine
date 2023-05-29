@@ -815,26 +815,6 @@ class GameObject {
   }
 
   /**
-   * 이 객체 위에 마우스가 올라가 있는지를 반환한다.
-   * 기본적으로 worldSize값과 worldPosition을 이용해 계산한다.
-   *
-   * @returns {boolean}
-   */
-  isMouseOver() {
-    const size = this.getSize();
-    const position = this.getPosition();
-    const leftTop = position.minus(size.multiply(0.5));
-    const rightBottom = position.add(size.multiply(0.5));
-    const mousePos = InputManager.getMousePos();
-    return (
-      leftTop.x < mousePos.x &&
-      mousePos.x < rightBottom.x &&
-      leftTop.y < mousePos.y &&
-      mousePos.y < rightBottom.y
-    );
-  }
-
-  /**
    * 마우스 왼쪽 버튼으로 이 객체를 클릭했는지를 반환한다.
    *
    * @returns {boolean}
@@ -850,6 +830,25 @@ class GameObject {
    */
   isRightMouseClickThis() {
     return InputManager.isKeyDown("rightMouse") && this.isMouseOver();
+  }
+
+  /**
+   * 월드 좌표계에서 이 객체 위에 마우스가 올라가 있는지를 반환한다.
+   *
+   * @returns {boolean}
+   */
+  isMouseOver() {
+    const size = this.getSize();
+    const position = this.getPosition();
+    const leftTop = position.minus(size.multiply(0.5));
+    const rightBottom = position.add(size.multiply(0.5));
+    const mousePos = InputManager.getMousePos();
+    return (
+      leftTop.x < mousePos.x &&
+      mousePos.x < rightBottom.x &&
+      leftTop.y < mousePos.y &&
+      mousePos.y < rightBottom.y
+    );
   }
 }
 
