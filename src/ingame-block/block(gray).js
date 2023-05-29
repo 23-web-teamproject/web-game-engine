@@ -1,6 +1,6 @@
 import { Vector, Sprite, GameObject, Rect } from "/src/engine/module.js";
 
-export default class Block extends GameObject {
+export default class Block extends Sprite {
   /**
    * 기본 블록입니다.
    *
@@ -8,22 +8,7 @@ export default class Block extends GameObject {
    * @param {number} y - y좌표
    */
   constructor(x, y) {
-    super();
-    this.addChild(new Rect({
-      name: "jumpTrigger",
-      width: 30,
-      height: 4,
-      transform: {
-        position: new Vector(x, y - 13),
-      },
-      isPhysicsEnable: true,
-      rigidbody: {
-        isStatic: true,
-      },
-    }));
-
-    // 블록 이미지
-    this.addChild(new Sprite({
+    super({
       name: "block(gray)",
       imagePath: "/src/ingame-block/block(gray).png",
       isPhysicsEnable: true,
@@ -33,6 +18,22 @@ export default class Block extends GameObject {
       rigidbody: {
         isStatic: true,
       },
-    }))
+    });
+
+    const trigger = new Rect({
+      name: "jumpTrigger",
+      width: 30,
+      height: 4,
+      transform: {
+        position: new Vector(0, -13),
+      },
+      isPhysicsEnable: true,
+      rigidbody: {
+        isTrigger: true,
+      },
+    });
+
+    this.addChild(trigger);
+    trigger.hide();
   }
 }
