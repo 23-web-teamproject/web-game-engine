@@ -708,8 +708,17 @@ class GameObject {
    *
    * @returns {Vector}
    */
+  getWorldSize() {
+    return this.getSize().elementMultiply(this.getWorldScale());
+  }
+
+  /**
+   * 이 객체의 size를 반환한다.
+   *
+   * @returns {Vector}
+   */
   getSize() {
-    return this.transform.size.elementMultiply(this.getWorldScale());
+    return this.transform.size;
   }
 
   /**
@@ -838,7 +847,7 @@ class GameObject {
    * @returns {boolean}
    */
   isMouseOver() {
-    const size = this.getSize();
+    const size = this.getWorldSize();
     const position = this.getPosition();
     const leftTop = position.minus(size.multiply(0.5));
     const rightBottom = position.add(size.multiply(0.5));

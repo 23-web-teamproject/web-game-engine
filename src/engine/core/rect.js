@@ -137,7 +137,7 @@ class Rect extends GameObject {
       ${this.color.g},
       ${this.color.b}
       )`;
-    const size = this.transform.size;
+    const size = this.getSize();
     this.context2d.fillRect(-size.x / 2, -size.y / 2, size.x, size.y);
 
     // 윤곽선을 그리도록 설정했다면 윤곽선을 렌더링한다.
