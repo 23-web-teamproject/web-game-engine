@@ -139,14 +139,14 @@ class GameObject {
      *
      * @type {Matrix}
      */
-    this.matrix = this.transform.toMatrix();
+    this.localMatrix = this.transform.toMatrix();
     /**
-     * 이전 프레임의 matrix와 현재 프레임의 matrix를 선형보간하기 위해
-     * 이전 프레임의 matrix를 저장해야한다.
+     * 부모의 matrix와 이 객체의 matrix를 행렬곱해 얻은 값이다.
+     * 이 matrix를 이용해 화면에 렌더링하게 된다.
      *
      * @type {Matrix}
      */
-    this.previousMatrix = this.transform.toMatrix();
+    this.matrix = this.localMatrix;
     /**
      * 이 객체의 자식들을 저장할 테이블이다.
      *
@@ -212,31 +212,52 @@ class GameObject {
     this.addPosition(this.getVelocity().multiply(deltaTime));
     // 변한 좌표값이 matrix에는 저장되지 않으므로
     // 어쩔 수 없이 matrix로 바꾸는 연산을 수행한다.
-    if (this.hasParentGameObject()) {
-      this.multiplyParentMatrix();
-    } else {
-      this.matrix = this.transform.toMatrix();
-    }
+    this.calculateMatrix();
   }
 
   /**
-   * transform을 matrix로 변환한다.
+   * 화면에 렌더링될 객체의 matrix를 계산한다.
    * 이 때 부모 객체가 있다면 행렬곱을 수행해 두 matrix를 결합한다.
-   * 이 객체의 transform만 변환을 수행하지 않고 이 객체의 자식들에게도
-   * calculateMatrix를 호출한다.
+   * 이 객체의 자식들의 matrix도 업데이트한다.
    */
+  updateMatrix() {
+    this.calculateMatrix();
+
+    this.childList.forEach((child) => {
+      child.updateMatrix();
+    });
+  }
+
   calculateMatrix() {
     if (this.isActive) {
+      this.updateLocalMatrix();
       if (this.hasParentGameObject()) {
         this.multiplyParentMatrix();
       } else {
-        this.matrix = this.transform.toMatrix();
+        this.matrix = this.localMatrix;
       }
-
-      this.childList.forEach((child) => {
-        child.calculateMatrix();
-      });
     }
+  }
+
+  updateLocalMatrix() {
+    this.localMatrix = this.transform.toMatrix();
+  }
+
+  /**
+   * 이 객체의 부모가 존재한다면 true를 반환한다.
+   *
+   * @returns {boolean}
+   */
+  hasParentGameObject() {
+    return this.parent !== undefined;
+  }
+
+  /**
+   * 자신의 transform을 matrix로 변환한 것과 부모의 matrix를 행렬곱한다.
+   */
+  multiplyParentMatrix() {
+    const parentMatrix = this.parent.getMatrix();
+    this.matrix = parentMatrix.multiply(this.localMatrix);
   }
 
   /**
@@ -260,23 +281,6 @@ class GameObject {
 
       this.afterDraw();
     }
-  }
-
-  /**
-   * 이 객체의 부모가 존재한다면 true를 반환한다.
-   *
-   * @returns {boolean}
-   */
-  hasParentGameObject() {
-    return this.parent !== undefined;
-  }
-
-  /**
-   * 자신의 transform을 matrix로 변환한 것과 부모의 matrix를 행렬곱한다.
-   */
-  multiplyParentMatrix() {
-    const parentMatrix = this.parent.getMatrix();
-    this.matrix = parentMatrix.multiply(this.transform.toMatrix());
   }
 
   /**
@@ -459,73 +463,138 @@ class GameObject {
   onCollision(other) {}
 
   /**
-   * 이 객체의 좌표값에 특정값을 더한다.
+   * 월드 좌표계에서 이 객체의 좌표값을 특정값만큼 더한다.
+   * 인자로 받은 좌표가 로컬 좌표계에서는 얼마나 이동시키게 되는지
+   * 행렬연산을 통해 구한후 로컬 좌표계에 더함으로 이 객체를 이동시킨다.
    *
-   * @param {Vector} position - 이 객체의 좌표에 더해질 좌표값
+   * @param {Vector} position - 월드좌표계에서 이 객체의 좌표값에 더해질 좌표값
    */
   addPosition(position) {
-    this.transform.position = this.transform.position.add(position);
+    if (this.hasParentGameObject()) {
+      // 월드 좌표계에서 이 객체의 위치를 이동시킨다.
+      this.matrix.x += position.x;
+      this.matrix.y += position.y;
+
+      // 월드 좌표계에서 이동한 좌표는 로컬 좌표계에서
+      // 어느 위치인지 역행렬을 통해 구한다.
+      // 부모 * 로컬 = 월드
+      // 로컬 = 부모^-1 * 월드
+      const inverseOfParentMatrix = this.parent.getMatrix().inverse();
+      const result = inverseOfParentMatrix.multiply(this.matrix);
+
+      // 구한 값을 로컬 좌표계 및 transform의 position에 대입한다.
+      this.transform.position = new Vector(result.x, result.y);
+      this.localMatrix.x = result.x;
+      this.localMatrix.y = result.y;
+    } else {
+      // 부모가 없는 경우 (로컬 좌표계 === 월드 좌표계)이므로
+      // 좌표값을 바로 더한다.
+      this.addLocalPosition(position);
+    }
   }
 
   /**
-   * 이 객체의 좌표값을 특정값으로 설정한다.
+   * 로컬 좌표계에서 이 객체의 좌표값에 특정값을 더한다.
+   * 로컬 좌표값을 변경한 후에는 항상 로컬 matrix도 갱신한다.
    *
-   * @param {Vector} position - 이 객체의 좌표로 설정될 좌표값
+   * @param {Vector} position - 로컬 좌표계에서 이 객체의 위치에 더해질 좌표값
+   */
+  addLocalPosition(position) {
+    this.transform.position = this.transform.position.add(position);
+    this.updateLocalMatrix();
+  }
+
+  /**
+   * 월드 좌표계에서 이 객체의 좌표를 특정값으로 설정한다.
+   * 인자로 받은 좌표가 로컬 좌표계에서는 얼마나 떨어진 거리인지
+   * 행렬연산을 통해 구한 후 로컬 좌표계에서 이 객체의 좌표를
+   * 특정값으로 설정한다.
+   *
+   * @param {Vector} position - 월드 좌표계에서 이 객체의 자표로 설정될 좌표값
    */
   setPosition(position) {
-    this.transform.position = position;
+    if (this.hasParentGameObject()) {
+      // 월드 좌표계에서 이 객체의 위치를 설정한다.
+      this.matrix.x = position.x;
+      this.matrix.y = position.y;
+
+      // 월드 좌표계에서 설정한 좌표는 로컬 좌표계에서
+      // 어느 위치인지 역행렬을 통해 구한다.
+      // 부모 * 로컬 = 월드
+      // 로컬 = 부모^-1 * 월드
+      const inverseOfParentMatrix = this.parent.getMatrix().inverse();
+      const result = inverseOfParentMatrix.multiply(this.matrix);
+
+      // 구한 값을 로컬 좌표계 및 transform의 position에 대입한다.
+      this.transform.position = new Vector(result.x, result.y);
+      this.localMatrix.x = result.x;
+      this.localMatrix.y = result.y;
+    } else {
+      // 부모가 없는 경우 (로컬 좌표계 === 월드 좌표계)이므로
+      // 좌표값을 바로 대입한다.
+      this.setLocalPosition(position);
+    }
   }
 
   /**
-   * 이 객체의 좌표값을 반환한다.
+   * 이 객체의 로컬 좌표값을 특정값으로 설정한다.
+   * 로컬 좌표값을 변경한 후에는 항상 로컬 matrix도 갱신한다.
+   *
+   * @param {Vector} position - 로컬 좌표계에서 이 객체의 좌표로 설정될 좌표값
+   */
+  setLocalPosition(position) {
+    this.transform.position = position;
+    this.updateLocalMatrix();
+  }
+
+  /**
+   * 로컬 좌표계에서 이 객체의 좌표값을 반환한다.
    *
    * @returns {Vector}
    */
-  getPosition() {
+  getLocalPosition() {
     return this.transform.position;
   }
 
   /**
-   * 이 객체의 화면상 좌표값을 반환한다.
-   * Canvas에 이 객체를 렌더링할 때 사용하는 matrix에서
-   * x, y값을 벡터로 만들어 반환한다.
+   * 월드 좌표계에서 이 객체의 좌표값을 반환한다.
    *
    * @returns {Vector}
    */
-  getWorldPosition() {
+  getPosition() {
     return new Vector(this.matrix.x, this.matrix.y);
   }
 
   /**
-   * 이 객체의 크기를 특정값만큼 변경한다.
+   * 로컬 좌표계의 크기를 특정값만큼 변경한다.
    *
-   * @param {Vector} 이 객체의 규모에 더해질 규모값
+   * @param {Vector} scale - 변경할 로컬 좌표계의 크기
    */
-  addScale(scale) {
+  addLocalScale(scale) {
     this.transform.scale = this.transform.scale.add(scale);
   }
 
   /**
-   * 이 객체의 크기를 특정값으로 설정한다.
+   * 로컬 좌표계의 크기를 특정값으로 변경한다.
    *
-   * @param {Vector} 이 객체의 규모로 설정될 규모값
+   * @param {Vector} scale - 이 객체의 규모로 설정될 규모값
    */
-  setScale(scale) {
+  setLocalScale(scale) {
     this.transform.scale = scale;
   }
 
   /**
-   * 이 객체의 규모(스케일값)값을 반환한다.
-   * 크기(size)를 반환하는게 아니다!
+   * 로컬 좌표계의 크기를 반환한다.
    *
    * @returns {Vector}
    */
-  getScale() {
+  getLocalScale() {
     return this.transform.scale;
   }
 
   /**
-   * 이 객체의 화면상 규모값을 반환한다.
+   * 이 객체의 matrix에서 scale을 추출해 반환한다.
+   * 월드 좌표계에서 이 객체의 크기를 구하기 위해 사용한다.
    *
    * @returns {Vector}
    */
@@ -540,34 +609,35 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 각도(degree)를 특정값만큼 변경한다.
+   * 로컬 좌표계에서 이 객체의 각도(degree)를 특정값만큼 변경한다.
    *
    * @param {number} degree - 이 객체의 각도에 더해질 각도값(degree)
    */
-  addRotation(degree) {
+  addLocalRotation(degree) {
     this.transform.rotation += degree;
+    this.transform.rotation = this.transform.rotation % 360;
   }
 
   /**
-   * 이 객체의 각도(degree)를 특정값으로 설정한다.
+   * 로컬 좌표계에서 이 객체의 각도(degree)를 특정값으로 설정한다.
    *
    * @param {number} degree - 이 객체의 각도로 설정될 각도값(degree)
    */
-  setRotation(degree) {
+  setLocalRotation(degree) {
     this.transform.rotation = degree;
   }
 
   /**
-   * 이 객체의 각도(degree)를 반환한다.
+   * 로컬 좌표계에서 이 객체의 각도(degree)를 반환한다.
    *
    * @returns {number}
    */
-  getRotation() {
+  getLocalRotation() {
     return this.transform.rotation;
   }
 
   /**
-   * 이 객체의 화면상 각도(degree)를 반환한다.
+   * 월드 좌표계에서 이 객체의 각도(degree)를 반환한다.
    *
    * @return {number}
    */
@@ -632,7 +702,18 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 물리적 크기를 반환한다.
+   * 월드 좌표계에서 이 객체의 물리적 크기를 반환한다.
+   * 로컬 좌표계에서 이 객체의 크기를 구한 후,
+   * 월드 좌표계의 scale에 곱한다.
+   *
+   * @returns {Vector}
+   */
+  getWorldSize() {
+    return this.getSize().elementMultiply(this.getWorldScale());
+  }
+
+  /**
+   * 이 객체의 size를 반환한다.
    *
    * @returns {Vector}
    */
@@ -641,13 +722,35 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 화면상 물리적 크기를 반환한다.
-   * 이 객체의 크기에 화면상 규모를 곱한 값을 반환하게 된다.
+   * 월드 좌표계에서 이 객체의 외형의 크기를 반환한다.
+   * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
+   * 만약 GameObject를 상속받는 객체에서 다른 Collider를 사용한다면,
+   * 이 함수를 재정의해야한다.
    *
    * @returns {Vector}
    */
-  getWorldSize() {
-    return this.getSize().elementMultiply(this.getWorldScale());
+  getBoundary() {
+    return this.collider.getBoundary().elementMultiply(this.getWorldScale());
+  }
+
+  /**
+   * 월드 좌표계에서 이 객체의 좌표값에 Collider의
+   * 월드 좌표계에서의 오프셋값을 더한 좌표를 반환한다.
+   *
+   * @returns {Vector}
+   */
+  getColliderPosition() {
+    return this.getPosition().add(this.getColliderOffset());
+  }
+
+  /**
+   * 월드 좌표계에서 Collider의 오프셋을 반환한다.
+   * 이 때 오프셋에 WorldScale을 적용한다.
+   *
+   * @returns {Vector}
+   */
+  getColliderOffset() {
+    return this.collider.getOffset();
   }
 
   /**
@@ -762,26 +865,6 @@ class GameObject {
   }
 
   /**
-   * 이 객체 위에 마우스가 올라가 있는지를 반환한다.
-   * 기본적으로 worldSize값과 worldPosition을 이용해 계산한다.
-   *
-   * @returns {boolean}
-   */
-  isMouseOver() {
-    const size = this.getWorldSize();
-    const position = this.getWorldPosition();
-    const leftTop = position.minus(size.multiply(0.5));
-    const rightBottom = position.add(size.multiply(0.5));
-    const mousePos = InputManager.getMousePos();
-    return (
-      leftTop.x < mousePos.x &&
-      mousePos.x < rightBottom.x &&
-      leftTop.y < mousePos.y &&
-      mousePos.y < rightBottom.y
-    );
-  }
-
-  /**
    * 마우스 왼쪽 버튼으로 이 객체를 클릭했는지를 반환한다.
    *
    * @returns {boolean}
@@ -797,6 +880,25 @@ class GameObject {
    */
   isRightMouseClickThis() {
     return InputManager.isKeyDown("rightMouse") && this.isMouseOver();
+  }
+
+  /**
+   * 월드 좌표계에서 이 객체 위에 마우스가 올라가 있는지를 반환한다.
+   *
+   * @returns {boolean}
+   */
+  isMouseOver() {
+    const size = this.getWorldSize();
+    const position = this.getPosition();
+    const leftTop = position.minus(size.multiply(0.5));
+    const rightBottom = position.add(size.multiply(0.5));
+    const mousePos = InputManager.getMousePos();
+    return (
+      leftTop.x < mousePos.x &&
+      mousePos.x < rightBottom.x &&
+      leftTop.y < mousePos.y &&
+      mousePos.y < rightBottom.y
+    );
   }
 }
 
