@@ -756,47 +756,6 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 화면상 외형의 크기를 반환한다.
-   * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
-   *
-   * @returns {Vector}
-   */
-  getWorldBoundary() {
-    return this.getBoundary().elementMultiply(this.getWorldScale());
-  }
-
-  /**
-   * 이 객체의 외형의 크기를 반환한다.
-   * 기본적으로 BoxCollider를 사용하기 때문에 상자 형태의 크기가 반환된다.
-   *
-   * @returns {Vector}
-   */
-  getBoundary() {
-    return this.collider.getBoundary();
-  }
-
-  /**
-   * 이 객체의 화면상 좌표값에 외형의 오프셋값을 더한 좌표를 반환한다.
-   * 이 때 오프셋에도 WorldScale을 적용해 더한다.
-   *
-   * @returns {Vector}
-   */
-  getColliderWorldPosition() {
-    return this.getWorldPosition().add(
-      this.getColliderOffset().elementMultiply(this.getWorldScale())
-    );
-  }
-
-  /**
-   * 이 객체의 외형의 오프셋값을 반환한다.
-   *
-   * @returns {Vector}
-   */
-  getColliderOffset() {
-    return this.collider.getOffset();
-  }
-
-  /**
    * 이 객체의 matrix를 반환한다.
    *
    * @returns {Matrix}
