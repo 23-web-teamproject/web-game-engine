@@ -463,53 +463,84 @@ class GameObject {
   onCollision(other) {}
 
   /**
-   * 이 객체의 좌표값에 특정값을 더한다.
-   * 월드 좌표계에서 이 객체의 좌표값을 변경하므로,
-   * 로컬 좌표계에도 영향을 미치게 된다.
+   * 월드 좌표계에서 이 객체의 좌표값을 특정값만큼 더한다.
+   * 인자로 받은 좌표가 로컬 좌표계에서는 얼마나 이동시키게 되는지
+   * 행렬연산을 통해 구한후 로컬 좌표계에 더함으로 이 객체를 이동시킨다.
    *
-   * @param {Vector} position - 이 객체의 좌표에 더해질 좌표값
+   * @param {Vector} position - 월드좌표계에서 이 객체의 좌표값에 더해질 좌표값
    */
   addPosition(position) {
-    const moveMatrix = new Matrix();
-    moveMatrix.x = position.x;
-    moveMatrix.y = position.y;
-    this.matrix = this.matrix.multiply(moveMatrix);
-    this.addLocalPosition(position);
-  }
-  
-  /**
-   * 이 객체의 좌표값에 특정값을 더한다.
-   *
-   * @param {Vector} position - 이 객체의 좌표에 더해질 좌표값
-   */
-  addLocalPosition(position) {
-    this.transform.position = this.transform.position.add(position);
+    if (this.hasParentGameObject()) {
+      // 월드 좌표계에서 이 객체의 위치를 이동시킨다.
+      this.matrix.x += position.x;
+      this.matrix.y += position.y;
+
+      // 월드 좌표계에서 이동한 좌표는 로컬 좌표계에서
+      // 어느 위치인지 역행렬을 통해 구한다.
+      // 부모 * 로컬 = 월드
+      // 로컬 = 부모^-1 * 월드
+      const inverseOfParentMatrix = this.parent.getMatrix().inverse();
+      const result = inverseOfParentMatrix.multiply(this.matrix);
+
+      // 구한 값을 로컬 좌표계 및 transform의 position에 대입한다.
+      this.transform.position = new Vector(result.x, result.y);
+      this.localMatrix.x = result.x;
+      this.localMatrix.y = result.y;
+    } else {
+      // 부모가 없는 경우 (로컬 좌표계 === 월드 좌표계)이므로
+      // 좌표값을 바로 더한다.
+      this.addLocalPosition(position);
+    }
   }
 
   /**
-   * parent는 알고 있고, 결과가 될 x,y좌표를 알고 있다.
-   * P * L = R
-   * L = P^-1 * R
-   * 부모 matrix의 역행렬을 구한 후 행렬곱하면 로컬 matrix의 값이 나올 것이다?
-   * @param {Vector} position - 이 객체의 좌표로 설정될 좌표값
+   * 로컬 좌표계에서 이 객체의 좌표값에 특정값을 더한다.
+   * 로컬 좌표값을 변경한 후에는 항상 로컬 matrix도 갱신한다.
+   *
+   * @param {Vector} position - 로컬 좌표계에서 이 객체의 위치에 더해질 좌표값
+   */
+  addLocalPosition(position) {
+    this.transform.position = this.transform.position.add(position);
+    this.updateLocalMatrix();
+  }
+
+  /**
+   * 월드 좌표계에서 이 객체의 좌표를 특정 위치로 설정한다.
+   * 인자로 받은 좌표가 로컬 좌표계에서는 얼마나 떨어진 거리인지
+   * 행렬연산을 통해 구한 후 로컬 좌표계에서 이 객체의 좌표를
+   * 특정 위치로 설정한다.
+   *
+   * @param {Vector} position - 월드 좌표계에서 이 객체의 자표로 설정될 좌표값
    */
   setPosition(position) {
-    if(this.hasParentGameObject()) {
-      const inverseOfParentMatrix = this.parent.getMatrix().inverse();
+    if (this.hasParentGameObject()) {
+      // 월드 좌표계에서 이 객체의 위치를 설정한다.
       this.matrix.x = position.x;
       this.matrix.y = position.y;
+
+      // 월드 좌표계에서 설정한 좌표는 로컬 좌표계에서
+      // 어느 위치인지 역행렬을 통해 구한다.
+      // 부모 * 로컬 = 월드
+      // 로컬 = 부모^-1 * 월드
+      const inverseOfParentMatrix = this.parent.getMatrix().inverse();
       const result = inverseOfParentMatrix.multiply(this.matrix);
-      this.setLocalPosition(new Vector(result.x, result.y));
-      console.log(inverseOfParentMatrix, this.matrix);
+
+      // 구한 값을 로컬 좌표계 및 transform의 position에 대입한다.
+      this.transform.position = new Vector(result.x, result.y);
+      this.localMatrix.x = result.x;
+      this.localMatrix.y = result.y;
     } else {
+      // 부모가 없는 경우 (로컬 좌표계 === 월드 좌표계)이므로
+      // 좌표값을 바로 대입한다.
       this.setLocalPosition(position);
     }
   }
 
   /**
    * 이 객체의 로컬 좌표값을 특정값으로 설정한다.
+   * 로컬 좌표값을 변경한 후에는 항상 로컬 matrix도 갱신한다.
    *
-   * @param {Vector} position - 이 객체의 좌표에 더해질 좌표값
+   * @param {Vector} position - 로컬 좌표계에서 이 객체의 좌표로 설정될 좌표값
    */
   setLocalPosition(position) {
     this.transform.position = position;
@@ -517,7 +548,7 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 로컬 좌표값을 반환한다.
+   * 로컬 좌표계에서 이 객체의 좌표값을 반환한다.
    *
    * @returns {Vector}
    */
@@ -526,9 +557,7 @@ class GameObject {
   }
 
   /**
-   * 이 객체의 화면상 좌표값을 반환한다.
-   * Canvas에 이 객체를 렌더링할 때 사용하는 matrix에서
-   * x, y값을 벡터로 만들어 반환한다.
+   * 월드 좌표계에서 이 객체의 좌표값을 반환한다.
    *
    * @returns {Vector}
    */

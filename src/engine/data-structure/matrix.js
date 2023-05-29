@@ -72,8 +72,8 @@ class Matrix {
     inverse.b = -this.b * inverseDet;
     inverse.c = -this.c * inverseDet;
     inverse.d = this.a * inverseDet;
-    inverse.x = (this.c * this.y) - (this.d * this.x) * inverseDet;
-    inverse.y = (this.b * this.x) - (this.a * this.y) * inverseDet;
+    inverse.x = ((this.c * this.y) - (this.d * this.x)) * inverseDet;
+    inverse.y = ((this.b * this.x) - (this.a * this.y)) * inverseDet;
     return inverse;
   }
 }
