@@ -1,7 +1,7 @@
 import { GameObject, Rect, Vector, Sprite } from "/src/engine/module.js";
 import Path from "/src/engine/utils/path.js";
 
-export default class movingblcok extends GameObject {
+export default class movingblock extends GameObject {
   constructor(x, y) {
     super();
     //setAssetFolderPath는 한 번만 실행해도 됩니다.
