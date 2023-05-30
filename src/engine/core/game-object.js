@@ -15,7 +15,7 @@ import InputManager from "/src/engine/core/input-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 
-import { typeCheck } from "/src/engine/utils.js";
+import { typeCheck, sin, cos } from "/src/engine/utils.js";
 
 /**
  * 게임에 등장하는 모든 객체의 기본형태다.
@@ -604,9 +604,9 @@ class GameObject {
     const rad = (this.getWorldRotation() * Math.PI) / 180;
 
     const x =
-      rad != 0 ? this.matrix.b / Math.sin(rad) : this.matrix.a / Math.cos(rad);
+      rad != 0 ? this.matrix.b / sin(rad) : this.matrix.a / cos(rad);
     const y =
-      rad != 0 ? -this.matrix.c / Math.sin(rad) : this.matrix.d / Math.cos(rad);
+      rad != 0 ? -this.matrix.c / sin(rad) : this.matrix.d / cos(rad);
     return new Vector(x, y);
   }
 
@@ -646,7 +646,7 @@ class GameObject {
   getWorldRotation() {
     const a = this.matrix.a;
     const b = this.matrix.b;
-    return (Math.atan2(b, a) * 180) / Math.PI;
+    return Math.atan2(b, a) * 180 / Math.PI;
   }
 
   /**
@@ -732,7 +732,7 @@ class GameObject {
    * @returns {Vector}
    */
   getBoundary() {
-    return this.collider.getBoundary().elementMultiply(this.getWorldScale());
+    return this.collider.boundary.elementMultiply(this.getWorldScale());
   }
 
   /**
