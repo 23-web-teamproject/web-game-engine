@@ -2,9 +2,12 @@ import {
   BoxCollider,
   CircleCollider,
 } from "/src/engine/data-structure/collider.js";
+import Manifold from "/src/engine/data-structure/manifold.js";
+import Vector from "/src/engine/data-structure/vector.js";
 
 import BoxCollisionResolver from "/src/engine/core/box-collision-resolver.js";
 import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.js";
+
 
 /**
  * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
@@ -40,6 +43,8 @@ class PhysicsManager {
     const length = objectList.length;
 
     const manifoldList = new Array();
+    const triggeredObjectList = new Array();
+
     for (let i = 0; i < length; i++) {
       const obj = objectList[i];
 
@@ -71,6 +76,10 @@ class PhysicsManager {
           continue;
         }
         if (collisionResolver.isCollideWith(other)) {
+          if (obj.rigidbody.isTrigger || other.rigidbody.isTrigger) {
+            triggeredObjectList.push([obj, other]);
+            continue;
+          }
           const manifold = collisionResolver.resolveCollision(other);
           if (manifold !== undefined) {
             manifoldList.push(manifold);
@@ -122,6 +131,14 @@ class PhysicsManager {
       ) {
         PhysicsManager.positionalCorrection(manifold);
       }
+    });
+
+    /**
+     * 객체가 트리거에 충돌했다면 객체의 onCollision을 호출한다.
+     */
+    triggeredObjectList.forEach((item) => {
+      item[0].onCollision(item[1]);
+      item[1].onCollision(item[0]);
     });
 
     // 더이상 참조하지 않기 위해 리스트를 초기화한다.

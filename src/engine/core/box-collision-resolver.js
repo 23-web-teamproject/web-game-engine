@@ -30,19 +30,15 @@ class BoxCollisionResolver extends CollisionResolver {
    */
   isCollideWithBox(box) {
     // 단순하게 AABB충돌체크 방식을 사용한다.
+    const thisPos = this.box.getColliderPosition();
+    const boxPos = box.getColliderPosition();
+    const thisBoundary = this.box.getBoundary();
+    const boxBoundary = box.getBoundary();
     if (
-      this.box.getColliderPosition().x -
-        this.box.getBoundary().x / 2 >
-        box.getColliderPosition().x + box.getBoundary().x / 2 ||
-      this.box.getColliderPosition().x +
-        this.box.getBoundary().x / 2 <
-        box.getColliderPosition().x - box.getBoundary().x / 2 ||
-      this.box.getColliderPosition().y -
-        this.box.getBoundary().y / 2 >
-        box.getColliderPosition().y + box.getBoundary().y / 2 ||
-      this.box.getColliderPosition().y +
-        this.box.getBoundary().y / 2 <
-        box.getColliderPosition().y - box.getBoundary().y / 2
+      thisPos.x - thisBoundary.x / 2 > boxPos.x + boxBoundary.x / 2 ||
+      thisPos.x + thisBoundary.x / 2 < boxPos.x - boxBoundary.x / 2 ||
+      thisPos.y - thisBoundary.y / 2 > boxPos.y + boxBoundary.y / 2 ||
+      thisPos.y + thisBoundary.y / 2 < boxPos.y - boxBoundary.y / 2
     ) {
       return false;
     }
@@ -67,8 +63,7 @@ class BoxCollisionResolver extends CollisionResolver {
     // 중심간 차의 절대값이 상자의 주변에 원이 접했을 때의 거리보다 크다면
     // 충돌하지 않은 것이다.
     if (
-      distance.x >
-        this.box.getBoundary().x / 2 + circle.getBoundary() ||
+      distance.x > this.box.getBoundary().x / 2 + circle.getBoundary() ||
       distance.y > this.box.getBoundary().y / 2 + circle.getBoundary()
     ) {
       return false;
@@ -85,9 +80,7 @@ class BoxCollisionResolver extends CollisionResolver {
 
     // 꼭짓점부분에서 충돌이 될 가능성을 검사한다.
     const d = distance.minus(this.box.getBoundary().multiply(0.5));
-    return (
-      d.squareLength() <= circle.getBoundary() * circle.getBoundary()
-    );
+    return d.squareLength() <= circle.getBoundary() * circle.getBoundary();
   }
 
   /**
