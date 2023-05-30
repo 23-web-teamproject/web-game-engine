@@ -20,6 +20,8 @@ import disappear_block from "../ingame-block/disappear_block.js";
 import MoveleftBlock from "../ingame-block/moveleftblock.js";
 import jumpitem from "../ingame-block/jumpitem.js";
 import movingblock from "../ingame-block/movingblock.js";
+import movingblock2 from "../ingame-block/movingblock2.js";
+import movingblock3 from "../ingame-block/movingblock3.js";
 import wall from "../ingame-block/wall.js";
 export default class Stage6 extends GameObject  {
   constructor() {
@@ -39,11 +41,8 @@ export default class Stage6 extends GameObject  {
     this.wall = new wall(565, 495)
     this.addChild(this.wall);
 
-    for(let i = 595; i<=595; i+=30)
-    {
-      this.movingblock = new movingblock(i, 495)
-      this.addChild(this.movingblock);
-    }
+    this.movingblock3 = new movingblock3(700,495)
+    this.addChild(this.movingblock3);
 
     for(let i = 565; i<=895; i+=30)
     {
@@ -96,12 +95,9 @@ export default class Stage6 extends GameObject  {
     this.wall = new wall(775, 315)
     this.addChild(this.wall);
 
-    for(let i = 715; i<=745; i+=30)
-    {
-      this.movingblock = new movingblock(i, 315)
-      this.addChild(this.movingblock);
-    }
-
+    this.movingblock2 = new movingblock2(715, 315)
+    this.addChild(this.movingblock2);
+    
     for(let i = 535; i<=685; i+=30)
     {
       this.thorn = new Thorn(i, 225)
@@ -120,11 +116,8 @@ export default class Stage6 extends GameObject  {
     this.wall = new wall(805, 195)
     this.addChild(this.wall);
 
-    for(let i = 535; i<=595; i+=30)
-    {
-      this.movingblock = new movingblock(i, 195)
-      this.addChild(this.movingblock);
-    }
+    this.movingblock3 = new movingblock3(535, 195)
+    this.addChild(this.movingblock3);
 
     this.jumpitem = new jumpitem(445, 285)
     this.addChild(this.jumpitem);
