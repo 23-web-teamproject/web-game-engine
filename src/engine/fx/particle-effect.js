@@ -316,7 +316,6 @@ class ParticleEffect extends GameObject {
     };
     const newParticle = new Particle(options);
     this.addChild(newParticle);
-    console.log(newParticle.isActive, newParticle.hasParentGameObject());
   }
 
   /**
