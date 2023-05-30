@@ -275,7 +275,7 @@ export default class Ball extends Circle {
       this.transform.velocity.y = -30;
     }
 
-    if (other.getName() == "jumpblock") {
+    if (other.getName() == "jumpblockTrigger") {
       this.a = 0;
       this.rigidbody.isGravity = true;
       this.transform.velocity.y = -50;

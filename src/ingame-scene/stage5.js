@@ -20,6 +20,8 @@ import disappear_block from "../ingame-block/disappear_block.js";
 import MoveleftBlock from "../ingame-block/moveleftblock.js";
 import dashitem from "../ingame-block/dashitem.js";
 import jumpitem from "../ingame-block/jumpitem.js";
+import wall from "../ingame-block/wall.js";
+import movingblcok from "../ingame-block/movingblock.js";
 export default class Stage5 extends GameObject  {
   constructor() {
     super();
@@ -92,6 +94,17 @@ export default class Stage5 extends GameObject  {
     this.moveleftblock = new MoveleftBlock(835, 135)
     this.addChild(this.moveleftblock);
 
+    this.wall = new wall(50, 225)
+    this.addChild(this.wall);
+
+    this.wall = new wall(300, 225)
+    this.addChild(this.wall);
+
+    this.movingblcok = new movingblcok(150, 225)
+    this.addChild(this.movingblcok);
+
+    this.star = new star(60, 175)
+    this.addChild(this.star);
   }
   update(deltaTime) {
     super.update(deltaTime);
