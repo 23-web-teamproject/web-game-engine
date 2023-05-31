@@ -1,11 +1,9 @@
-import {
-  Manifold,
-  TriggerManifold,
-} from "/src/engine/data-structure/manifold.js";
+import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
 
 import CollisionResolverFactory from "/src/engine/core/collision-resolver-factory.js";
-import Debug from "../debug.js";
+
+import { Sort } from "/src/engine/utils.js";
 
 /**
  * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
@@ -25,7 +23,7 @@ class PhysicsManager {
    */
   static physicsEnableGameObjectList = null;
 
-  static physicsEnabledGameObjectGraph = null;
+  static collisionPairList = null;
 
   static manifoldList = null;
 
@@ -34,43 +32,49 @@ class PhysicsManager {
   constructor() {}
 
   /**
-   * 씬 객체 내에 존재하는 오브젝트들중
-   * 물리효과가 켜진 오브젝트들에게 물리효과를 계산해 적용한다.
+   * 씬 객체 내에 존재하는 객체들중
+   * 물리효과가 켜진 객체들에게 물리효과를 계산해 적용한다.
    *
    * @param {GameObject} scene - 현재 씬
    * @param {number} deltaTime - 이전 프레임과 현재 프레임의 시간차
+   * @static
    */
   static update(scene, deltaTime) {
     PhysicsManager.clearStaticLists();
-    PhysicsManager.collectPhysicsEnabledGameObjectToList(scene);
-    PhysicsManager.createPhysicsEnabledGameObjectGraph();
+    PhysicsManager.collectPhysicsEnabledGameObject(scene);
+    PhysicsManager.computeAABBOfPhysicsEnabledGameObject();
+    PhysicsManager.sortPhysicsEnabledGameObjectList();
+    PhysicsManager.createCollisionPairList();
     PhysicsManager.resolveCollision();
     PhysicsManager.integrateForce(deltaTime);
-    PhysicsManager.applyImpulseToCollidedObjects();
+    PhysicsManager.applyImpulse();
     PhysicsManager.integrateVelocity(deltaTime);
     PhysicsManager.runPositionalCorrection();
-    PhysicsManager.callOnCollisionForTriggerManifoldList();
+    PhysicsManager.callOnCollisionForAllTriggeredObject();
   }
 
   /**
-   * 물리효과가 켜진 오브젝트를 수집해둔 리스트를 초기화한다.
+   * 물리효과가 켜진 객체를 수집해둔 리스트를 초기화한다.
    * 다음 루프에 다시 물리 효과를 적용하기 위해
    * 항상 물리 연산이 끝난 다음에는 초기화를 해야한다.
+   * @static
    */
   static clearStaticLists() {
     PhysicsManager.physicsEnableGameObjectList = new Array();
+    PhysicsManager.collisionPairList = new Array();
     PhysicsManager.manifoldList = new Array();
     PhysicsManager.triggerManifoldList = new Array();
   }
 
   /**
-   * 씬 객체 내에 존재하는 모든 오브젝트들중
-   * 물리효과를 받는 오브젝트들만 모아 리스트에 담는다.
+   * 씬 객체 내에 존재하는 모든 객체들중
+   * 물리효과를 받는 객체들만 모아 리스트에 담는다.
    * 모든 객체를 조사해야하기 때문에 재귀호출하여 탐색한다.
    *
+   * @static
    * @param {GameObject} scene - 현재 씬
    */
-  static collectPhysicsEnabledGameObjectToList(scene) {
+  static collectPhysicsEnabledGameObject(scene) {
     scene.childList.forEach((child) => {
       if (child.isActive) {
         if (child.isPhysicsEnable) {
@@ -78,86 +82,146 @@ class PhysicsManager {
         }
 
         if (child.childList.length > 0) {
-          PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
+          PhysicsManager.collectPhysicsEnabledGameObject(child);
         }
       }
     });
   }
 
-  static createPhysicsEnabledGameObjectGraph() {
-    const length = PhysicsManager.physicsEnableGameObjectList.length;
-    PhysicsManager.physicsEnabledGameObjectGraph = Array.from(
-      { length: length },
-      () => Array(length).fill(false)
-    );
+  /**
+   * 수집한 객체들의 AABB를 미리 구해 반복되는 연산을 줄인다.
+   * @static
+   */
+  static computeAABBOfPhysicsEnabledGameObject() {
+    PhysicsManager.physicsEnableGameObjectList.forEach((obj) => {
+      obj.getAABB();
+    });
   }
 
   /**
+   * 수집한 객체들을 AABB로 나타냈을 때
+   * min.x를 기준으로 오름차순 정렬한다.
+   * @static
+   */
+  static sortPhysicsEnabledGameObjectList() {
+    const sorter = new Sort(
+      PhysicsManager.physicsEnableGameObjectList,
+      (objA, objB) => {
+        return objA.collider.aabb.min.x < objB.collider.aabb.min.x;
+      }
+    );
+
+    sorter.run();
+  }
+
+  /**
+   * 정렬한 배열을 순회하여 절대로 충돌이 일어나지 않을 객체는 건너뛰고,
+   * 남은 객체들을 Pair로 묶어 후보 리스트를 생성한다.(Sweep and prune)
+   * @static
+   */
+  static createCollisionPairList() {
+    const list = Array();
+
+    PhysicsManager.physicsEnableGameObjectList.forEach((objA) => {
+      /**
+       * 탐색했던 객체들을 대상으로 Pair를 생성할 수 있는지 확인한다.
+       * 이 때 객체 배열은 오름차순으로 정렬되어 있다.
+       * 임시 리스트에 추가된 객체들과 현재 객체가 충돌 가능한지 확인한다.
+       * 만약 임시 리스트에 추가된 객체(A)가 현재 객체(B)와 충돌 불가능이라면
+       * 앞으로 탐색할 객체(C...)들도 A와는 절대 충돌하지 않으므로
+       * 임시 리스트에서 제거한다.
+       */
+      for (let i = 0; i < list.length; i++) {
+        /**
+         * list에는 현재 객체보다 max.x가 더 작은 객체들이 있다.
+         * 현재 객체와 충돌가능한 상태인지 확인하고,
+         * 그렇지 않다면 검사하지 않은 객체들과는
+         * 절대 충돌하지 않으므로 제거한다.
+         */
+        const objAAABB = objA.collider.aabb;
+        const objBAABB = list.at(i).collider.aabb;
+        if (objAAABB.min.x > objBAABB.max.x) {
+          list.splice(i, 1);
+          i--;
+        } else {
+          /**
+           * 단순하게 AABB로만 검사한다.
+           * 구체적인 충돌체크는 manifold를 생성할 때 한다.
+           */
+          if (
+            !(
+              objAAABB.min.x > objBAABB.max.x ||
+              objAAABB.max.x < objBAABB.min.x ||
+              objAAABB.min.y > objBAABB.max.y ||
+              objAAABB.max.y < objBAABB.min.y
+            )
+          ) {
+            PhysicsManager.collisionPairList.push([objA, list.at(i)]);
+          }
+        }
+      }
+
+      list.push(objA);
+    });
+  }
+
+  /**
+   * 충돌할 가능성이 있는 객체들끼리 충돌체크를 수행하고,
+   * 만약 정말로 충돌했다면 manifold를 생성해 물리효과를 연산한다.
+   * 만약 Trigger에 충돌했다면 단순히 onCollision만 호출하도록 한다.
    * @static
    */
   static resolveCollision() {
-    PhysicsManager.physicsEnableGameObjectList.forEach((objA, i) => {
+    PhysicsManager.collisionPairList.forEach((pair) => {
+      const objA = pair[0];
+      const objB = pair[1];
       /**
-       * Trigger나 Static인 상태의 객체는
-       * 직접 다른 객체와 충돌했는지를 검사하지 않는다.
+       * 서로 isStatic이면 건너뛴다.
        */
-      if (objA.rigidbody.isTrigger || objA.rigidbody.isStatic) {
+      if (objA.rigidbody.isStatic && objB.rigidbody.isStatic) {
         return;
       }
-      PhysicsManager.physicsEnableGameObjectList.forEach((objB, j) => {
-        /**
-         * forEach를 중첩했기 때문에 자기 자신과는
-         * 충돌체크를 하지 않게 한다.
-         */
-        if (objA === objB) {
-          return;
-        }
-        /**
-         * 두 객체의 레이어가 충돌체크를 하지 않는 레이어인지 검사한다.
-         */
-        if (
-          objA.getLayer().canPhysicsInteractLayerWith(objB.getLayer()) === false
-        ) {
-          return;
-        }
-        /**
-         * 두 객체가 이미 충돌을 처리한 상태라면 건너뛴다.
-         */
-        if (PhysicsManager.physicsEnabledGameObjectGraph[i][j]) {
-          return;
-        }
-        PhysicsManager.count++;
-        /**
-         * 충돌체크를 진행할 대상의 Collider 타입에 따라
-         * Resolver를 선택해 진행한다.
-         */
-        let collisionResolver = CollisionResolverFactory.create(objA);
+      /**
+       * 서로 isTrigger라면 건너뛴다.
+       */
+      if (objA.rigidbody.isTrigger && objB.rigidbody.isTrigger) {
+        return;
+      }
+      /**
+       * 두 객체의 레이어가 충돌체크를 하지 않는 레이어라면 건너뛴다.
+       */
+      if (
+        objA.getLayer().canPhysicsInteractLayerWith(objB.getLayer()) === false
+      ) {
+        return;
+      }
 
-        if (collisionResolver.isCollideWith(objB)) {
-          /**
-           * 만약 객체가 트리거와 충돌한 상태라면
-           * 물리량 연산을 하지 않고
-           * 그저 onCollision만 호출하도록 한다.
-           */
-          if (objB.rigidbody.isTrigger) {
-            PhysicsManager.triggerManifoldList.push(
-              new TriggerManifold(objA, objB)
-            );
-            return;
-          }
-          const manifold = collisionResolver.resolveCollision(objB);
-          if (manifold !== undefined) {
-            PhysicsManager.manifoldList.push(manifold);
-            PhysicsManager.physicsEnabledGameObjectGraph[i][j] = true;
-            PhysicsManager.physicsEnabledGameObjectGraph[j][i] = true;
-          }
+      let collisionResolver = CollisionResolverFactory.create(objA);
+
+      if (collisionResolver.isCollideWith(objB)) {
+        /**
+         * 만약 객체가 트리거와 충돌한 상태라면
+         * 물리량 연산을 하지 않고
+         * 그저 onCollision만 호출하도록 한다.
+         */
+        if (objA.rigidbody.isTrigger || objB.rigidbody.isTrigger) {
+          PhysicsManager.triggerManifoldList.push(
+            new TriggerManifold(objA, objB)
+          );
+          return;
         }
-      });
+        const manifold = collisionResolver.resolveCollision(objB);
+        if (manifold !== undefined) {
+          PhysicsManager.manifoldList.push(manifold);
+        }
+      }
     });
   }
 
   /**
-   * 물체의 가속도를 적분하여 속도에 누적한다.
+   * 충돌한 모든 객체에 대해서 각 객체의 가속도를 적분하여
+   * 속도에 누적한다.
+   * @static
    */
   static integrateForce(deltaTime) {
     PhysicsManager.physicsEnableGameObjectList.forEach((obj) => {
@@ -166,15 +230,17 @@ class PhysicsManager {
   }
 
   /**
-   * 물체의 충돌을 계산하여 속도를 변화시킨다.
+   * 충돌한 모든 객체의 충격량을 계산하여 각 객체의
+   * 속도 벡터를 변화시킨다.
+   * @static
    */
-  static applyImpulseToCollidedObjects() {
+  static applyImpulse() {
     PhysicsManager.manifoldList.forEach((manifold) => {
       if (
         manifold.objA.rigidbody.isTrigger === false &&
         manifold.objB.rigidbody.isTrigger === false
       ) {
-        PhysicsManager.applyImpulse(
+        PhysicsManager.applyImpulseToCollidedObjects(
           manifold.objA,
           manifold.objB,
           manifold.normal
@@ -186,13 +252,13 @@ class PhysicsManager {
   }
 
   /**
-   * 두 객체에게 충격량을 적용한다.
-   *
+   * 서로 충돌한 두 객체에게 충격량을 적용한다.
+   * @static
    * @param {GameObject} objA - 서로 충돌한 객체1
    * @param {GameObject} objB - 서로 충돌한 객체2
    * @param {Vector} normal - 반작용 방향
    */
-  static applyImpulse(objA, objB, normal) {
+  static applyImpulseToCollidedObjects(objA, objB, normal) {
     const diff = objB.getVelocity().minus(objA.getVelocity());
     const dot = diff.dot(normal);
 
@@ -216,20 +282,21 @@ class PhysicsManager {
     objA.addVelocity(impulse.multiply(-objA.getInverseMass()));
     objB.addVelocity(impulse.multiply(objB.getInverseMass()));
 
-    PhysicsManager.applyFriction(objA, objB, normal, j);
+    PhysicsManager.applyFrictionToCollidedObjects(objA, objB, normal, j);
   }
 
   /**
-   * 정지 마찰 계수와 운동 마찰 계수를 통해 마찰력을 적용한다.
-   *
+   * 충돌한 모든 객체에 대해 각 객체의 정지 마찰 계수와
+   * 운동 마찰 계수를 통해 마찰력을 적용한다.
+   * @static
    * @param {GameObject} objA - 서로 충돌한 객체1
    * @param {GameObject} objB - 서로 충돌한 객체2
    * @param {Vector} normal - 반작용 방향
    * @param {number} j - 충격량
    */
-  static applyFriction(objA, objB, normal, j) {
+  static applyFrictionToCollidedObjects(objA, objB, normal, j) {
     // 충격이 전달된 후의 속도로 계산을 진행한다.
-    // 두 물체의 속도 벡터의 차로 마찰이 작용할 방향을 찾는다.
+    // 두 객체의 속도 벡터의 차로 마찰이 작용할 방향을 찾는다.
     const relativeVelocity = objB.getVelocity().minus(objA.getVelocity());
 
     // relativeVelocity를 n에 정사영하여 normal방향 성분을 얻고,
@@ -244,7 +311,7 @@ class PhysicsManager {
     let jt = -relativeVelocity.dot(tangent);
     jt /= objA.getInverseMass() + objB.getInverseMass();
 
-    // 두 물체 사이의 정지 마찰 계수를 구한다.
+    // 두 객체 사이의 정지 마찰 계수를 구한다.
     const staticFriction = Math.sqrt(
       objA.getStaticFriction() * objA.getStaticFriction() +
         objB.getStaticFriction() * objB.getStaticFriction()
@@ -256,7 +323,7 @@ class PhysicsManager {
     if (Math.abs(jt) < j * staticFriction) {
       frictionImpulse = tangent.multiply(jt);
     } else {
-      // 두 물체 사이의 운동 마찰 계수를 구한다.
+      // 두 객체 사이의 운동 마찰 계수를 구한다.
       const dynamicFriction = Math.sqrt(
         objA.getDynamicFriction() * objA.getDynamicFriction() +
           objB.getDynamicFriction() * objB.getDynamicFriction()
@@ -269,7 +336,9 @@ class PhysicsManager {
   }
 
   /**
-   * 속도를 적분하여 좌표값에 누적한다.
+   * 충돌한 모든 객체에 대해 각 객체의 속도를 적분하여
+   * 각각의 좌표값에 누적한다.
+   * @static
    */
   static integrateVelocity(deltaTime) {
     PhysicsManager.physicsEnableGameObjectList.forEach((obj) => {
@@ -278,8 +347,10 @@ class PhysicsManager {
   }
 
   /**
+   * 충돌한 모든 객체가 물리 연산으로 인해서
    * 서로 겹쳐지는 상황을 피하기 위해
    * 겹친 도형끼리 멀어지는 연산을 한다.
+   * @static
    */
   static runPositionalCorrection() {
     PhysicsManager.manifoldList.forEach((manifold) => {
@@ -287,7 +358,7 @@ class PhysicsManager {
         manifold.objA.rigidbody.isTrigger === false &&
         manifold.objB.rigidbody.isTrigger === false
       ) {
-        PhysicsManager.positionalCorrection(manifold);
+        PhysicsManager.runPositionCorrectionToCollidedObjects(manifold);
       }
     });
   }
@@ -295,10 +366,10 @@ class PhysicsManager {
   /**
    * 충돌처리가 되었지만 서서히 빠져버리는 버그를 해결하기 위해
    * 충돌된 위치에서 정해진 값만큼 강제로 떨어지게 한다.
-   *
+   * @static
    * @param {Manifold} manifold - 충돌체크의 결과
    */
-  static positionalCorrection(manifold) {
+  static runPositionCorrectionToCollidedObjects(manifold) {
     const percentage = 0.4; // ??? 0.2 ~ 0.8
     const slop = 0.05; // ??? 0.01 ~ 0.1
     const correction = manifold.normal.multiply(
@@ -314,10 +385,11 @@ class PhysicsManager {
   }
 
   /**
-   * 객체가 트리거에 충돌했다면
-   * 객체와 트리거의 onCollision을 호출한다.
+   * 객체와 트리거가 충돌한 상황이 담긴 triggerManifoldList의
+   * 모든 객체의 onCollision을 호출한다.
+   * @static
    */
-  static callOnCollisionForTriggerManifoldList() {
+  static callOnCollisionForAllTriggeredObject() {
     PhysicsManager.triggerManifoldList.forEach((triggerManifold) => {
       triggerManifold.objA.onCollision(triggerManifold.objB);
       triggerManifold.objB.onCollision(triggerManifold.objA);

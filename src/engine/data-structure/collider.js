@@ -1,3 +1,4 @@
+import AABB from "/src/engine/data-structure/aabb.js";
 import Vector from "/src/engine/data-structure/vector.js";
 
 import { typeCheck } from "/src/engine/utils.js";
@@ -16,6 +17,12 @@ class Collider {
      * @type {Vector}
      */
     this.offset = typeCheck(options.offset, Vector, Vector.zero);
+
+    /**
+     * 이 외형의 AABB형태를 나타낸다.
+     * @type {AABB}
+     */
+    this.aabb = new AABB();
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Manifold } from "/src/engine/data-structure/manifold.js";
+import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
 
 import CollisionResolver from "/src/engine/core/collision-resolver.js";
