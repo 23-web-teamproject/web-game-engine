@@ -5,6 +5,7 @@ import CollisionResolverFactory from "/src/engine/core/collision-resolver-factor
 
 import { Sort } from "/src/engine/utils.js";
 
+
 /**
  * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
  * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
