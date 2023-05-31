@@ -5,7 +5,6 @@ import CollisionResolverFactory from "/src/engine/core/collision-resolver-factor
 
 import { Sort } from "/src/engine/utils.js";
 
-
 /**
  * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
  * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
@@ -206,9 +205,7 @@ class PhysicsManager {
          * 그저 onCollision만 호출하도록 한다.
          */
         if (objA.rigidbody.isTrigger || objB.rigidbody.isTrigger) {
-          PhysicsManager.triggerManifoldList.push(
-            new TriggerManifold(objA, objB)
-          );
+          PhysicsManager.triggerManifoldList.push([objA, objB]);
           return;
         }
         const manifold = collisionResolver.resolveCollision(objB);
@@ -392,8 +389,8 @@ class PhysicsManager {
    */
   static callOnCollisionForAllTriggeredObject() {
     PhysicsManager.triggerManifoldList.forEach((triggerManifold) => {
-      triggerManifold.objA.onCollision(triggerManifold.objB);
-      triggerManifold.objB.onCollision(triggerManifold.objA);
+      triggerManifold[0].onCollision(triggerManifold[1]);
+      triggerManifold[1].onCollision(triggerManifold[0]);
     });
   }
 }
