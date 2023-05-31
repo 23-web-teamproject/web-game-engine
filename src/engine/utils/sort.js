@@ -8,40 +8,45 @@ class Sort {
    * 퀵 정렬을 수행한다.
    */
   run() {
-    this.quickSort(0, this.array.length-1);
+    this.quickSort(0, this.array.length - 1);
   }
 
   quickSort(left, right) {
     if (left >= right) return;
     const mid = this.partition(left, right);
     this.quickSort(left, mid - 1);
-    this.quickSort(mid, right);
+    this.quickSort(mid + 1, right);
   }
 
   partition(left, right) {
-    let pivot = Math.floor(left + (right - left) / 2);
-    while (left <= right) {
-      while (
-        left <= pivot &&
-        this.comparator(this.array[left], this.array[pivot])
-      ) {
-        left++;
+    let i = left + 1;
+    let j = right;
+    while (i < j) {
+      while (i <= right) {
+        if (!this.comparator(this.array[i], this.array[left])) {
+          break;
+        }
+        i++;
       }
-      while (
-        right > pivot &&
-        this.comparator(this.array[pivot], this.array[right])
-      ) {
-        right--;
+
+      while (j > left) {
+        if (this.comparator(this.array[j], this.array[left])) {
+          break;
+        }
+        j--;
       }
-      if (left <= right) {
-        const t = this.array[right];
-        this.array[right] = this.array[left];
-        this.array[left] = t;
-        left++;
-        right--;
+      if (i < j) {
+        const t = this.array[j];
+        this.array[j] = this.array[i];
+        this.array[i] = t;
       }
     }
-    return left;
+
+    const t = this.array[left];
+    this.array[left] = this.array[j];
+    this.array[j] = t;
+
+    return j;
   }
 }
 
