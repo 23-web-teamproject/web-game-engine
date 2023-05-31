@@ -1,4 +1,5 @@
 import Color from "/src/engine/data-structure/color.js";
+import Vector from "/src/engine/data-structure/vector.js";
 
 import GameObject from "/src/engine/core/game-object.js";
 
@@ -97,6 +98,29 @@ class Circle extends GameObject {
       this.radius
     );
     this.collider = new CircleCollider(options.boundary);
+  }
+
+  /**
+   * 원을 AABB형태로 변환하여 생성한다.
+   * getBoundary를 실행할 경우 월드 좌표계에서 반지름이 반환되므로
+   * 월드 좌표계에서 Collider의 위치에 반지름을 뺀 값이 AABB의 min,
+   * Collider의 위치에 반지름을 더한 값이 AABB의 max가 된다.
+   *
+   * @returns {AABB}
+   */
+  getAABB() {
+    const colliderPos = this.getColliderPosition();
+    const boundary = this.getBoundary();
+    this.collider.aabb.min = new Vector(
+      colliderPos.x - boundary,
+      colliderPos.y - boundary
+    );
+    this.collider.aabb.max = new Vector(
+      colliderPos.x + boundary,
+      colliderPos.y + boundary
+    );
+
+    return this.collider.aabb;
   }
 
   /**

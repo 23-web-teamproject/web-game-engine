@@ -1,9 +1,5 @@
 import Color from "/src/engine/data-structure/color.js";
-import {
-  DefaultLayer,
-  Layer,
-  TerrainLayer,
-} from "/src/engine/data-structure/layer.js";
+import { DefaultLayer, Layer } from "/src/engine/data-structure/layer.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 import Transform from "/src/engine/data-structure/transform.js";
 import RigidBody from "/src/engine/data-structure/rigidbody.js";
@@ -603,10 +599,8 @@ class GameObject {
   getWorldScale() {
     const rad = (this.getWorldRotation() * Math.PI) / 180;
 
-    const x =
-      rad != 0 ? this.matrix.b / sin(rad) : this.matrix.a / cos(rad);
-    const y =
-      rad != 0 ? -this.matrix.c / sin(rad) : this.matrix.d / cos(rad);
+    const x = rad != 0 ? this.matrix.b / sin(rad) : this.matrix.a / cos(rad);
+    const y = rad != 0 ? -this.matrix.c / sin(rad) : this.matrix.d / cos(rad);
     return new Vector(x, y);
   }
 
@@ -646,7 +640,17 @@ class GameObject {
   getWorldRotation() {
     const a = this.matrix.a;
     const b = this.matrix.b;
-    return Math.atan2(b, a) * 180 / Math.PI;
+    return (Math.atan2(b, a) * 180) / Math.PI;
+
+    // TODO
+    // Math.atan2의 수행시간을 줄일 수 없다면
+    // 부모의 transform을 참조하는 방식으로
+    // 바꾸어야 한다.
+    // if (this.hasParentGameObject()) {
+    //   return this.transform.rotation + this.parent.getWorldRotation();
+    // } else {
+    //   return this.transform.rotation;
+    // }
   }
 
   /**
@@ -721,6 +725,28 @@ class GameObject {
    */
   getSize() {
     return this.transform.size;
+  }
+
+  /**
+   * Collider를 이용해 이 객체의 AABB를 생성한다.
+   * 만약 다른 Collider를 사용하는 객체라면 이 함수를 재정의해야한다.
+   * GameObject는 기본적으로 BoxCollider이기 때문에
+   * 상자 형태를 이용해 AABB를 생성한다.
+   *
+   * @returns {AABB}
+   */
+  getAABB() {
+    const colliderPos = this.getColliderPosition();
+    const boundary = this.getBoundary();
+    this.collider.aabb.min = new Vector(
+      colliderPos.x - boundary.x / 2,
+      colliderPos.y - boundary.y / 2
+    );
+    this.collider.aabb.max = new Vector(
+      colliderPos.x + boundary.x / 2,
+      colliderPos.y + boundary.y / 2
+    );
+    return this.collider.aabb;
   }
 
   /**
