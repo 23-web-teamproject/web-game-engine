@@ -17,4 +17,11 @@ class Manifold {
   }
 }
 
-export default Manifold;
+class TriggerManifold {
+  constructor(objA, objB) {
+    this.objA = objA;
+    this.objB = objB;
+  }
+}
+
+export { Manifold, TriggerManifold };
