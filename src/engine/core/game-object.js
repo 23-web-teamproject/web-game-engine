@@ -489,6 +489,9 @@ class GameObject {
       // 좌표값을 바로 더한다.
       this.addLocalPosition(position);
     }
+
+    // 부모의 좌표가 변했으므로 자식들에게 전파한다.
+    this.updateMatrix();
   }
 
   /**
@@ -532,6 +535,9 @@ class GameObject {
       // 좌표값을 바로 대입한다.
       this.setLocalPosition(position);
     }
+
+    // 부모의 좌표가 변했으므로 자식들에게 전파한다.
+    this.updateMatrix();
   }
 
   /**
