@@ -1,6 +1,8 @@
-import GameObject from "/src/engine/core/game-object.js";
-import Sprite from "/src/engine/core/sprite.js";
+import { ParticleLayer } from "/src/engine/data-structure/layer.js";
 import Vector from "/src/engine/data-structure/vector.js";
+
+import GameObject from "/src/engine/core/sprite.js";
+import Sprite from "/src/engine/core/sprite.js";
 
 import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
 
@@ -32,6 +34,9 @@ class Particle extends Sprite {
    * @param {RigidBody} [options.rigidbody]
    */
   constructor(options) {
+    // 파티클은 파티클 레이어에 속한다.
+    options.layer = new ParticleLayer();
+
     super(options);
     /** @type {number} */
     this.lifeTime = options.lifeTime;
@@ -64,7 +69,7 @@ class Particle extends Sprite {
       Math.sin(rad) * this.speed
     );
     if (this.isPhysicsEnable) {
-      this.addVelocity(forward);
+      this.addVelocity(this.forward);
     }
   }
 
@@ -145,6 +150,11 @@ class ParticleEffect extends GameObject {
    * @param {number} [options.lifeTime]
    * @param {string} [options.imagePath]
    * @param {boolean} [options.isParticlePhysicsEnable]
+   * @param {object} [options.particleRigidbody]
+   * @param {number} [options.particleRigidbody.mass=1]
+   * @param {number} [options.particleRigidbody.bounceness=0.5]
+   * @param {number} [options.particleRigidbody.staticFriction=0.2]
+   * @param {number} [options.particleRigidbody.dynamicFriction=0.1]
    * @param {Color} [options.color]
    * @param {boolean} [options.isColorOverlayEnable]
    * @param {Color} [options.overlayColor]
@@ -310,6 +320,13 @@ class ParticleEffect extends GameObject {
       false
     );
     /**
+     * 파티클의 rigidbody다.
+     * 이 값 그대로 파티클의 생성자로 넘겨진다.
+     *
+     * @type {object}
+     */
+    this.particleRigidbody = options.particleRigidbody;
+    /**
      * 파티클 효과가 켜진 후 지난 시간을 나타낸다.
      *
      * @type {number}
@@ -373,6 +390,7 @@ class ParticleEffect extends GameObject {
       isAlphaFade: this.isAlphaFade,
       isScaleFade: this.isScaleFade,
       imagePath: this.imagePath,
+      rigidbody: this.particleRigidbody,
     };
     const newParticle = new Particle(options);
     this.addChild(newParticle);
