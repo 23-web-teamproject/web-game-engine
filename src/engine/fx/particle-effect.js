@@ -1,7 +1,7 @@
 import { ParticleLayer } from "/src/engine/data-structure/layer.js";
 import Vector from "/src/engine/data-structure/vector.js";
 
-import GameObject from "/src/engine/core/sprite.js";
+import GameObject from "/src/engine/core/game-object.js";
 import Sprite from "/src/engine/core/sprite.js";
 
 import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
