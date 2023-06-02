@@ -22,6 +22,8 @@ class Particle extends Sprite {
    * @param {number} [options.direction]
    * @param {number} [options.diffuseness]
    * @param {number} [options.speed]
+   * @param {number} [options.rotatePerSecond]
+   * @param {number} [options.rotateDirection]
    * @param {Color} [options.color]
    * @param {boolean} [options.isColorOverlayEnable]
    * @param {Color} [options.overlayColor]
@@ -49,6 +51,12 @@ class Particle extends Sprite {
     /** @type {number} */
     this.speed = options.speed;
 
+    /** @type {number} */
+    this.rotateSpeed = 360 * options.rotatePerSecond;
+
+    /** @type {number} */
+    this.rotateDirection = options.rotateDirection;
+
     const rad = -(this.direction * Math.PI) / 180;
     /** @type {Vector} */
     this.forward = new Vector(
@@ -70,6 +78,7 @@ class Particle extends Sprite {
     super.update(deltaTime);
 
     this.fadeAway();
+    this.rotate(deltaTime);
     if (this.isPhysicsEnable === false) {
       this.spreadOut(deltaTime);
     }
@@ -96,6 +105,12 @@ class Particle extends Sprite {
     if (this.isAlphaFade) {
       this.color.a = this.lifeTime / this.initialLifeTime;
     }
+  }
+  /**
+   * 초당 회전수에 맞춰 이미지를 회전시킨다.
+   */
+  rotate(deltaTime) {
+    this.addLocalRotation(this.rotateDirection * this.rotateSpeed * deltaTime);
   }
 
   /**
@@ -125,6 +140,8 @@ class ParticleEffect extends GameObject {
    * @param {number} [options.direction]
    * @param {number} [options.diffuseness]
    * @param {number} [options.speed]
+   * @param {number} [options.rotatePerSecond]
+   * @param {string} [options.rotateDirection]
    * @param {number} [options.lifeTime]
    * @param {string} [options.imagePath]
    * @param {boolean} [options.isParticlePhysicsEnable]
@@ -230,6 +247,39 @@ class ParticleEffect extends GameObject {
      */
     this.speed = typeCheckAndClamp(options.speed, "number", 100, 10, 1000);
     /**
+     * 파티클이 1초에 얼마나 회전할 것인지를 의미한다.
+     * 값의 범위는 0.01(100초 에 1번 회전) ~ 10(0.1초에 1번 회전)이다.
+     * 기본값은 1이다.
+     *
+     * @type {number}
+     */
+    this.rotatePerSecond = typeCheckAndClamp(
+      options.rotatePerSecond,
+      "number",
+      1,
+      0.01,
+      10
+    );
+    /**
+     * 파티클의 회전방향을 의미한다.
+     *
+     *     rotateDirection     | 설명
+     *     --------------------+---------------------------
+     *     "clockwise"         | 시계방향으로 회전한다.
+     *     "counter-clockwise" | 반시계방향으로 회전한다.
+     *     "random"            | 랜덤으로 회전 방향을 정한다.
+     *
+     * 기본값은 "clockwise"다.
+     *
+     * @type {string}
+     */
+    const rotateDiretionList = ["clockwise", "counter-clockwise", "random"];
+    if (rotateDiretionList.includes(options.rotateDirection)) {
+      this.rotateDirection = options.rotateDirection;
+    } else {
+      this.rotateDirection = "clockwise";
+    }
+    /**
      * lifeTime은 생성된 파티클이 몇 초동안 화면에 보일지를 의미한다.
      * 값의 범위는 0.1 ~ 10.0이다.
      * 기본값은 3초다.
@@ -304,10 +354,20 @@ class ParticleEffect extends GameObject {
   }
 
   createParticle() {
+    let rotateDirection = 1;
+
+    if (this.rotateDirection === "counter-clockwise") {
+      rotateDirection = -1;
+    } else if (this.rotateDirection === "random") {
+      rotateDirection = Math.random() < 0.5 ? 1 : -1;
+    }
+
     const options = {
       direction: this.direction,
       diffuseness: this.diffuseness,
       speed: this.speed,
+      rotatePerSecond: this.rotatePerSecond,
+      rotateDirection: rotateDirection,
       lifeTime: this.lifeTime,
       isPhysicsEnable: this.isParticlePhysicsEnable,
       isAlphaFade: this.isAlphaFade,
