@@ -16,17 +16,32 @@ import { Sort } from "/src/engine/utils.js";
  */
 class PhysicsManager {
   /**
-   * 물리효과가 적용될 객체들
-   *
-   * @property {array}
+   * 씬 내에 존재하는 모든 객체들 중에
+   * 물리효과가 적용될 객체들만 수집한 배열이다.
    * @static
+   * @property {array}
    */
   static physicsEnableGameObjectList = null;
-
+  /**
+   * 수집한 객체들중에 충돌가능성이 있는 객체들을
+   * Pair로 묶은 배열이다.
+   * @static
+   * @property {array}
+   */
   static collisionPairList = null;
-
+  /**
+   * 실제로 충돌이 일어난 Pair의 충격량과 충돌깊이를 저장한 배열이다.
+   * @static
+   * @property {array}
+   */
   static manifoldList = null;
-
+  /**
+   * 실제로 충돌이 일어난 Pair들 중에 Trigger객체와 충돌했을 경우
+   * manifoldList에 추가되지 않고 이 배열에 추가된다.
+   * 단순히 onCollision만 호출하기 위해 사용한다.
+   * @static
+   * @property {array}
+   */
   static triggerManifoldList = null;
 
   constructor() {}
@@ -35,9 +50,9 @@ class PhysicsManager {
    * 씬 객체 내에 존재하는 객체들중
    * 물리효과가 켜진 객체들에게 물리효과를 계산해 적용한다.
    *
+   * @static
    * @param {GameObject} scene - 현재 씬
    * @param {number} deltaTime - 이전 프레임과 현재 프레임의 시간차
-   * @static
    */
   static update(scene, deltaTime) {
     PhysicsManager.clearStaticLists();
@@ -70,7 +85,6 @@ class PhysicsManager {
    * 씬 객체 내에 존재하는 모든 객체들중
    * 물리효과를 받는 객체들만 모아 리스트에 담는다.
    * 모든 객체를 조사해야하기 때문에 재귀호출하여 탐색한다.
-   *
    * @static
    * @param {GameObject} scene - 현재 씬
    */
